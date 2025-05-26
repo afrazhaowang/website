@@ -3,233 +3,346 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>afra wang's website</title>
+    <title>Afra Wang - Writer & Researcher</title>
     <style>
         body {
-            font-family: 'Avenir Next', sans-serif; /* Sets a clean font for better readability */
-            line-height: 1.6;
-            color: #333;
+            font-family: 'Courier New', monospace;
+            background-color: #f5f5f5;
+            color: #000000;
+            line-height: 1.2;
+            margin: 0;
+            padding: 20px;
             max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
-            background-color: #f8f8f8;
         }
-        h1, h2, h3 {
-            margin-top: 20px; /* Adds space above headings */
-            margin-bottom: 10px; /* Adds space below headings */
+        
+        .nav {
+            margin-bottom: 40px;
+            font-size: 18px;
         }
-        h1 {
-            font-size: 2em; /* Final font size for h1 */
-        }
-        h2 {
-            font-size: 1.25em; /* Final font size for h2 */
-        }
-        h3 {
-            font-size: 1.10em; /* Added style for h3 with font-size 1.10em */
-        }
-        p {
-            margin-bottom: 10px;
-        }
-        ul {
-            padding-left: 20px;
-            margin-bottom: 20px;
-        }
-        li {
-            margin-bottom: 5px;
-        }
-        a {
-            color: #734f96;
-            text-decoration: none;
-        }
-        a:hover {
+        
+        .nav a {
+            color: #0066cc;
             text-decoration: underline;
-            color: #ffd0e2; /* Change link color to pink on hover */
+            margin-right: 15px;
         }
-        button {
-            background-color: yellow; /* Set button background color to yellow */
-            cursor: pointer; /* Change cursor to pointer on hover */
+        
+        .nav a:hover {
+            background-color: #e6f2ff;
         }
-        button:hover {
-            background-color: #ff0; /* Change button background color to yellow on hover */
+        
+        .nav .separator {
+            color: #333;
+            margin: 0 5px;
         }
-        img {
-            max-width: 100%; /* Make images responsive */
-            height: auto; /* Maintain aspect ratio */
+        
+        h1 {
+            font-size: 48px;
+            font-weight: normal;
+            margin-bottom: 40px;
+            color: #333;
         }
-        section {
-            margin: 40px 0; /* Adds vertical spacing between sections */
-            padding: 20px; /* Adds padding inside each section */
-            border-top: 2px solid #734f96; /* Adds a top border for visual separation */
-            background-color: #ffffff; /* White background for each section */
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow for depth */
+        
+        .content {
+            font-size: 18px;
+            margin-bottom: 30px;
         }
+        
+        .content a {
+            color: #0066cc;
+            text-decoration: underline;
+        }
+        
+        .content a:hover {
+            background-color: #e6f2ff;
+        }
+        
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .experience {
+            border-left: 3px solid #0066cc;
+            padding-left: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .experience h3 {
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        
+        .writing-item {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .writing-item:last-child {
+            border-bottom: none;
+        }
+        
+        .publication {
+            color: #666;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .quote {
+            font-style: italic;
+            border-left: 3px solid #ddd;
+            padding-left: 20px;
+            margin: 20px 0;
+            color: #555;
+        }
+        
+        .quote-author {
+            text-align: right;
+            font-size: 16px;
+            margin-top: 10px;
+            color: #666;
+        }
+
     </style>
 </head>
 <body>
-    <h2>Afra Wang</h2>
-    
-    <p>I'm a freelance writer, researcher, podcaster, tech/crypto growth and marketing specialist, ex-news editor</p>
-    
-    <h2>Some things about me:</h2>
-    <ul>
-        <li>Grew up in China until 17, then spent the rest of my life in California, New York City, and London</li>
-        <li>On internet my whole life, which is my actual hometown</li>
-        <li>A digital omnivore, I have an insatiable appetite for digital content and a knack for catching up with cultural zeitgeists</li>
-        <li>Went to Columbia, LSE and UC Irvine to study international history and media studies</li>
-        <li>Worked in Silicon Valley for 5 years, currently living in Mountain View, California but often travel to NYC and London</li>
-        <li>Bilingual in English and Chinese</li>
-        <li>Sometimes I angel invest in early startups in AI and crypto</li>
-    </ul>
-    
-    <h2>What keeps me busy these days:</h2>
-    <ul>
-        <li>I'm taking a career break to enhance my overall meta, focusing on writing, reading, and AI proficiency.</li>
-        <li>I host a podcast called <a href="https://cyberpinkfm.xyz/">CyberPink</a> (in Mandarin Chinese). It explores contemporary zeitgeists, culture, society, and includes movie reviews. With over 55+ episodes released, it's where I channel most of my creative energy.</li>
-        <li>I am avidly reading about diverse topics recently, including: the history of AI and information technology, digital media evolution, cybernetics, counterculture movements, futurism, cultural identity, immigration, Chinese industrialization history, the interplay between modernization and colonialism. I also read literature and fiction</li>
-    </ul>
+    <nav class="nav">
+        <a href="#" onclick="showSection('home')">home</a>
+        <span class="separator">•</span>
+        <a href="#" onclick="showSection('writings')">writings</a>
+        <span class="separator">•</span>
+        <a href="#" onclick="showSection('experiences')">working experiences</a>
+        <span class="separator">•</span>
+        <a href="#" onclick="showSection('commonplace')">commonplace book</a>
+    </nav>
 
-    <h2>My previous roles and experiences:</h2>
-    <ul>
-        <li>Growth and marketing at <a href="https://demo.nebra.one/">NEBRA Labs</a>, a crypto SaaS company focuses on zero-knowledge infrastructure on Ethereum
-            <ul>
-                <li>GTM plan for a zero-knowledge infrastructure product <a href="https://demo.nebra.one/">UPA</a>.</li> 
-                <li>I helped build <a href="https://proofpass.io/">Proof Pass</a>, a ZK ticketing product based on NEBRA's technology. Managed <a href="https://x.com/nebrazkp">social account</a> and maintained partnerships</li>
-                <li>Led growth-focused events "Proof Day" series in <a href="https://lu.ma/dg8mr64g">Brussels</a>, <a href="https://lu.ma/vt7eppy3">SF</a>, <a href="https://partiful.com/e/u7nomOQ7UdcU4hZWxiRa">NYC</a>, <a href="https://proofsingularity.xyz/">Denver</a>, and <a href="https://proofsingularity.xyz/">Istanbul.</a></li> 
-                <li>Participated <a href="https://x.com/afrazhaowang/status/1786394182170374503">a16z's CSX</a> in London and presented during <a href="https://x.com/afrazhaowang/status/1800569544416665807">demo day</a></li>
-            </ul>
-        </li>
-        <li>Growth marketing and operations with <a href="https://mask.io/">Mask Network</a> focusing on next-gen internet, decentralized social networks, DIDs (decentralized identity/identifier) and public goods
-            <ul>
-                <li>I started and hosted a bilingual web3 podcast called <a href="https://www.youtube.com/channel/UCBBvZFEt_JWl3xY_Xgra7nA">Web3 Revolution (it was shut down)</a>.</li>
-                <li>I was growing decentralized social application "<a href="https://firefly.social/">Firefly</a>," an aggregator of Lens Protocol, Farcaster, and Twitter</li>
-                <li>I hosted hackathons, hacker houses, events, and conferences including "<a href="https://mask.notion.site/Social-Oneness-Day-Hackathon-WIKI-4dd27d7819134549ab1791b88f50863a">Social Oneness Day and Hackathon</a>"; ZuSocial Hacker House (a 2-week hacker house, here is the<a href="https://matterslab.notion.site/ZuSocial-Resident-Handbook-5560a6892ecd4e66aeff9823afac971a"> resident handbook</a>); <a href="https://masknetwork.medium.com/zuzalu-2023-thinking-beyond-the-twitter-box-a-panel-that-discusses-building-new-social-82509a478e46">Zuzalu's Think Beyond the Twitter Box</a>; <a href="https://seedao.mirror.xyz/5dCvXQR6l9oBl8eZTjJiqMnbHtY6rnTKjb9SIfH5xk4">in 2023 </a> DAO Montenegro in Montenegro</a>; <a href="https://masknetwork.medium.com/mask-network-ethdenver-come-hang-out-with-us-at-web3-social-house-a326c3640653">Web3 Social House in Eth Denver 2023</a>; <a href="https://masknetwork.medium.com/event-recap-decentralized-social-afternoon-at-sxsw-innovation-collaboration-and-celebration-c5bf94d49142">SXSW's Decentralized Social Day</a>; <a href="https://masknetwork.medium.com/masks-the-future-of-human-connection-event-celebrated-the-post-merge-ethereum-community-at-a458aab2447">The Future of Human Connection during DevCon</a>; EthShanghai 2022, 2023 (<a href="https://masknetwork.medium.com/fireside-chat-with-jaan-tallinn-confluence-of-minds-synergy-on-ai-research-ethshanghai2023-69cc5aad2d73">Fireside chat with Jaan Tallinn</a>)</li>
-            </ul>
-        </li>
-        <li>Co-founded and co-hosted <a href="https://www.politico.com/news/magazine/2020/07/23/chinese-podcasts-newsletters-independent-media-379377">Loud Murmurs Podcast</a>, due to some personal reasons we had to shut it down. It was <a href="https://www.politico.com/news/magazine/2020/07/23/chinese-podcasts-newsletters-independent-media-379377">reported by Politico</a>, featured by University of Toronto's course "Reading Chinese and English: China from the Inside Out", and <a href="https://www.reddit.com/r/DataHoarder/comments/sh8db5/loud_murmurs_archiving_every_episode_of_a_podcast/">mourned by many <a href="https://chinadigitaltimes.net/chinese/676350.html">netizens</a></a>. 
-        <li>I was a Growth Content Associate at <a href="https://www.smartnews.com/">SmartNews</a>, an AI-driven news company, where I collaborated with lead product managers and ML engineers within a 24/7 newsroom environment alongside former journalists transitioning their expertise to tech</li>
-        <li>I served as the founding News Editor at <a href="https://www.newsbreak.com/headlines">NewsBreak</a> right after my graduation, it is another AI-powered local news platform. In both companies,push notification engagement strategies, newsletter growth initiatives, news ranking algorithms, local content development, and election coverage features </li>
-    </ul>
+    <div id="home" class="section active">
+        <h1>hello, i'm afra!</h1>
 
-    <h2>Writing Samples:</h2>
-        One of the goals for this career break is to write and publish more in English. In my past life, I freelanced and interned at various media outlets, often writing in Chinese under my Chinese name (王曌).  (Note: while my old work reflects earlier stages of my development, it nonetheless remains a part of my journey.) Some examples:</h2>
-    <ul>
-        <li>ChinaTalk Newsletter:
+        <div class="content">
+            <p>I'm a freelance writer, researcher, podcaster, tech/crypto growth and marketing specialist, ex-news editor.</p>
+            
             <ul>
-                <li><a href="https://www.chinatalk.media/">Upcoming: DeepSeek and National Destiny</a></li>
+                <li>Grew up in China until age 17.</li>
+                <li>Spent the rest of my life in California, New York City, and London.</li>
+                <li>Consider the internet my actual hometown.</li>
+                <li>Have a knack for catching up with cultural zeitgeists.</li>
+                <li>Studied international history and media studies at Columbia, LSE, and UC Irvine.</li>
+                <li>Worked in Silicon Valley for 5 years in AI, media, and crypto.</li>
+                <li>Currently living in Mountain View, California and London.</li>
+                <li>Bilingual in English and Chinese.</li>
+                <li>Sometimes angel invest in early startups in AI and crypto.</li>
             </ul>
-        </li>
-        <li>Reboot Newsletter:
-            <ul>
-                <li><a href="https://joinreboot.org/p/on-typing-chinese">On Typing Chinese</a></li>
-            </ul>
-        </li>
-        <li>Sixth Tone:
-            <ul>
-                <li><a href="https://www.sixthtone.com/news/1010315">How China sees Elon Musk and his mother Maye Musk</a> (co-wrote)</li>
-                <li><a href="https://www.sixthtone.com/news/1005563">Consumerism and its lip service in response to China's growing feminist awareness</a></li>
-            </ul>
-        </li>
-        <li>ChinaFile: <a href="https://www.chinafile.com/conversation/ivanka-chinafile-conversation">How Chinese women view Ivanka Trump</a></li>
-        <li>New York Times Beijing Bureau (intern):
-            <ul>
-                <li><a href="https://cn.nytimes.com/usa/20200219/hubei-donation-from-us/">Helping Hubei from California during COVID</a></li>
-                <li>Contested nationalism among Chinese youth series: <a href="https://cn.nytimes.com/china/20160823/nationalism-china-student-abroad-zhoulei/">article 1</a>, <a href="https://cn.nytimes.com/china/20160824/nationalism-china-taiwan-students/">article 2</a>, and <a href="https://cn.nytimes.com/china/20160825/cc25nationalism3-yangsiyu/">article 3</a> (received <a href="https://sopawards.com/">SOPA award</a> in 2016)</li>
-                <li>Trump's election and its impact series: <a href="https://cn.nytimes.com/usa/20161101/trump-election-china/">article 1</a>, <a href="https://cn.nytimes.com/usa/20161102/trump-election-china-2/">article 2</a></li>
-                <li><a href="https://cn.nytimes.com/china/20161101/yan-lianke-hongkong/">Interview with Yan Lianke</a></li>
-            </ul>
-        </li>
-        <li>Initium Media:
-            <ul>
-                <li><a href="https://theinitium.com/zh-Hans/article/20180712-opinion-wangzhao-voice-of-china">China's ambitious yet failed propaganda machine "Voice of China"</a></li>
-                <li><a href="https://theinitium.com/zh-hans/opinion/20200813-opinion-tiktok-microsoft">TikTok's struggle in a post-globalized world</a></li>
-                <li><a href="https://theinitium.com/zh-hans/opinion/20161206-opinion-wangzhao-meet-the-flockers-petition">Struggle of political participation for Chinese Americans</a></li>
-            </ul>
-        </li>
-        <li>Financial Times:
-            <ul>
-                <li><a href="http://www.ftchinese.com/story/001082090?full=y&archive">A Shanghai homeless person triggered society-wide discussion on the meaning of life</a></li>
-                <li><a href="http://www.ftchinese.com/story/001081463?archive">How the sci-fi blockbuster The Wandering Earth breaks Hollywood's monopoly on the space exploration genre</a></li>
-            </ul>
-        </li>
-    </ul>
+            
+            <p><strong>What keeps me busy these days:</strong></p>
+            
+            <p>I write a newsletter, <a href="https://afraw.substack.com/" target="_blank">Concurrent</a>, which explores the parallel and divergent tech/cultural currents flowing through Silicon Valley, China, and the world. </p>
 
-    <h2>Media and Other Presence:</h2>
-    <ul>
-        <li><a href="https://pixelperfect.typlog.io/episodes/elon-musk-silicon-valley">Is Elon Musk the antihero of Silicon Valley? with 新新人类 Pixel Perfect podcast</a></li>
-        <li> Moderated the panel "From Western Liberalism to World Liberalism" featuring Vitalik Buterin and Bruno Maçães at DevCon, Ethereum Foundation's largest annual conference, 2024 November<a href="https://youtu.be/CJUy9mkK_SU?si=k5iFFaD5B_DeNHVo"> Watch the panel discussion</a></li>
-        <li><a href="https://theblockchainsocialist.com/china-is-a-process-understanding-the-chinese-crypto-diaspora-community/">China is a Process: Understanding the Chinese Crypto Diaspora Community with The Blockchain Socialist</a></li>
-        <li><a href="https://podcast.theamericanroulette.com/episodes/silicon-valley-trump-harris">Silicon Valley's Political Shift with "The American Roulette 美轮美换" podcast</a></li>
-        <li><a href="https://guiguzaozhidao.fireside.fm/2022">The tale of GameStop memestock with "What's Next 硅谷早知道" podcast</a></li>
-        <li><a href="https://www.linkedin.com/posts/afrazhaowang_podcast-community-google-activity-6816401852956049408--gg1?utm_source=share&utm_medium=member_desktop">Talk titled "Podcast as a verb, a lifestyle, and a community" at Google's Shanghai office</a></li>
-        <li>Moderator and MC for <a href="https://2023.ethshanghai.org/">ETH Shanghai 2023</a> and <a href="https://2022.ethshanghai.org/">2022</a></li>
-    </ul>
+            <p>I host a podcast called <a href="#">CyberPink</a> (in Mandarin Chinese). It explores contemporary zeitgeists, culture, society, and includes movie reviews. With over 55+ episodes released, it's where I channel most of my creative energy.</p>
+            
+            <p>I am avidly reading about diverse topics recently, including: the history of AI and information technology, digital media evolution, cybernetics, counterculture movements, futurism, cultural identity, immigration, Chinese industrialization history, the interplay between modernization and colonialism. I also read literature and fiction.</p>
+            
+            <p><strong>Other obsessions:</strong> I occasionally paint (oil painting, soft oil pastel, acrylic, traditional Chinese ink painting). Visiting museums gives me highs. I feel alive and deeply connected to nature when snowboarding, mountain biking, and hiking. I love cooking! A cinephile myself, I always need movie recommendations.</p>
+            
+            <p>👋 <a href="mailto:hello@afrazhaowang.gmail.com">hello@afrazhaowang.gmail.com</a></p>
+        </div>
+    </div>
 
-    <h2>Commonplace Book:</h2>
-    <blockquote>
-        <p>It is both privilege and curse of the diaspora that they can treat their homeland as an academic abstraction and interrogate it without reservation.</p>
-        <footer>―Yangyang Cheng</footer>
-        <p>Having lived nearly half of my life far from my birth country, I describe my Chineseness as a linguistic belonging.</p>
-        <footer>―Yangyang Cheng</footer>
-    </blockquote>
-    <blockquote>
-        <p>Perhaps home is not a place but simply an irrevocable condition.</p>
-        <footer>― James Baldwin</footer>
-    </blockquote>
-    
-    <blockquote>
-        <p>All you have to do is write one true sentence. Write the truest sentence that you know. So finally I would write one true sentence, and then go on from there.</p>
-        <footer>– Ernest Hemingway</footer>
-    </blockquote>
-    
-    <blockquote>
-        <p>Computing and new media depend upon flesh-and-bone metabolism. Our "virtual worlds" are made possible by battalions of human beings.</p>
-        <footer>— Thomas S. Mullaney</footer>
-    </blockquote>
-    </ul>
+    <div id="writings" class="section">
+        <h1>writings</h1>
+        
+        <div class="content">
+            <p>I'm eager to write and publish more! Publications seeking stories, please reach out. Previously, I freelanced and interned at various media outlets, writing in both English and Chinese under my Chinese name (王曌).</p>
+            
+            <div class="writing-item">
+                <h3><a href="https://afraw.substack.com/" target="_blank">Read my latest writing at Concurrent</a></h3>
+                <p class="publication">Concurrent Newsletter</p>
+            </div>
+
+            <div class="writing-item">
+                <h3><a href="https://www.chinatalk.media/p/deepseek-and-destiny-a-national-vibe" target="_blank">DeepSeek and Destiny: A National Vibe Shift</a></h3>
+                <p class="publication">ChinaTalk Newsletter</p>
+            </div>
+            
+            <div class="writing-item">
+                <h3><a href="https://joinreboot.org/p/on-typing-chinese" target="_blank">On Typing Chinese</a></h3>
+                <p class="publication">Reboot Newsletter</p>
+            </div>
+            
+            <div class="writing-item">
+                <h3><a href="https://www.sixthtone.com/news/1010315">How China sees Elon Musk and his mother Maye Musk</a></h3>
+                <p class="publication">Sixth Tone (co-wrote)</p>
+            </div>
+            
+            <div class="writing-item">
+                <h3><a href="https://www.sixthtone.com/news/1005563">Consumerism and its lip service in response to China's growing feminist awareness</a></h3>
+                <p class="publication">Sixth Tone</p>
+            </div>
+            
+            
+            <div class="writing-item">
+                <h3><a href="https://cn.nytimes.com/usa/20200219/hubei-donation-from-us/">Helping Hubei from California during COVID</a></h3>
+                <p class="publication">New York Times Chinese Edition (intern)</p>
+            </div>
+            
+            <div class="writing-item">
+                <h3><a href="https://cn.nytimes.com/china/20160823/nationalism-china-student-abroad-zhoulei/">Contested nationalism among Chinese youth series</a></h3>
+                <p class="publication">New York Times Chinese Edition (received SOPA award in 2016)</p>
+                <p>Three-part series exploring political identity and nationalism  among young Chinese students abroad</p>
+            </div>
+            
+            <div class="writing-item">
+                <h3><a href="https://theinitium.com/zh-Hans/article/20180712-opinion-wangzhao-voice-of-china">China's ambitious yet failed propaganda machine "Voice of China"</a></h3>
+                <p class="publication">Initium Media</p>
+            </div>
+            
+            <div class="writing-item">
+                <h3><a href="https://theinitium.com/zh-hans/opinion/20200813-opinion-tiktok-microsoft">TikTok's struggle in a post-globalized world</a></h3>
+                <p class="publication">Initium Media</p>
+            </div>
+            
+            <div class="writing-item">
+                <h3><a href="http://www.ftchinese.com/story/001081463?archive">How the sci-fi blockbuster The Wandering Earth breaks Hollywood's monopoly on the space exploration genre</a></h3>
+                <p class="publication">Financial Times</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="experiences" class="section">
+        <h1>working experiences</h1>
+        
+        <div class="content">
+            <div class="experience">
+                <h3>Growth and Marketing at <a href="https://demo.nebra.one/">NEBRA Labs</a></h3>
+                <p>Crypto SaaS company focuses on zero-knowledge infrastructure on Ethereum. Developed GTM plan for a zero-knowledge infrastructure product <a href="https://demo.nebra.one/">UPA</a>. Built <a href="https://proofpass.io/">Proof Pass</a>, a ZK ticketing product based on NEBRA's technology. Managed <a href="https://x.com/nebrazkp">social account</a> and maintained partnerships. Led growth-focused events "Proof Day" series in <a href="https://lu.ma/dg8mr64g">Brussels</a>, <a href="https://lu.ma/vt7eppy3">SF</a>, <a href="https://partiful.com/e/u7nomOQ7UdcU4hZWxiRa">NYC</a>, <a href="https://proofsingularity.xyz/">Denver</a>, and <a href="https://proofsingularity.xyz/">Istanbul</a>. Participated <a href="https://x.com/afrazhaowang/status/1786394182170374503">a16z's CSX</a> in London and presented during <a href="https://x.com/afrazhaowang/status/1800569544416665807">demo day</a>.</p>
+            </div>
+            
+            <div class="experience">
+                <h3>Growth Marketing and Operations at <a href="https://mask.io/">Mask Network</a></h3>
+                <p>Focusing on next-gen internet, decentralized social networks, DIDs (decentralized identity/identifier) and public goods. Started and hosted a bilingual web3 podcast called <a href="https://www.youtube.com/channel/UCBBvZFEt_JWl3xY_Xgra7nA">Web3 Revolution (it was shut down)</a>. Growing decentralized social application "<a href="https://firefly.social/">Firefly</a>," an aggregator of Lens Protocol, Farcaster, and Twitter. Hosted hackathons, hacker houses, events, and conferences including "<a href="https://mask.notion.site/Social-Oneness-Day-Hackathon-WIKI-4dd27d7819134549ab1791b88f50863a">Social Oneness Day and Hackathon</a>"; ZuSocial Hacker House (a 2-week hacker house, here is the <a href="https://matterslab.notion.site/ZuSocial-Resident-Handbook-5560a6892ecd4e66aeff9823afac971a">resident handbook</a>); <a href="https://masknetwork.medium.com/zuzalu-2023-thinking-beyond-the-twitter-box-a-panel-that-discusses-building-new-social-82509a478e46">Zuzalu's Think Beyond the Twitter Box</a>; <a href="https://seedao.mirror.xyz/5dCvXQR6l9oBl8eZTjJiqMnbHtY6rnTKjb9SIfH5xk4">in 2023</a>; <a href="https://masknetwork.medium.com/mask-network-ethdenver-come-hang-out-with-us-at-web3-social-house-a326c3640653">Web3 Social House in Eth Denver 2023</a>; <a href="https://masknetwork.medium.com/event-recap-decentralized-social-afternoon-at-sxsw-innovation-collaboration-and-celebration-c5bf94d49142">SXSW's Decentralized Social Day</a>; <a href="https://masknetwork.medium.com/masks-the-future-of-human-connection-event-celebrated-the-post-merge-ethereum-community-at-a458aab2447">The Future of Human Connection during DevCon</a>; EthShanghai 2022, 2023 (<a href="https://masknetwork.medium.com/fireside-chat-with-jaan-tallinn-confluence-of-minds-synergy-on-ai-research-ethshanghai2023-69cc5aad2d73">Fireside chat with Jaan Tallinn</a>).</p>
+            </div>
+            
+            <div class="experience">
+                <h3>Co-founder, <a href="https://www.politico.com/news/magazine/2020/07/23/chinese-podcasts-newsletters-independent-media-379377">Loud Murmurs Podcast</a></h3>
+                <p>Co-founded and co-hosted podcast that was reported by <a href="https://www.politico.com/news/magazine/2020/07/23/chinese-podcasts-newsletters-independent-media-379377">Politico</a>, featured by University of Toronto's course "Reading Chinese and English: China from the Inside Out", and mourned by many <a href="https://chinadigitaltimes.net/chinese/676350.html">netizens</a> when we had to shut it down due to personal reasons.</p>
+            </div>
+            
+            <div class="experience">
+                <h3>Growth Content Associate at <a href="https://www.smartnews.com/">SmartNews</a></h3>
+                <p>AI-driven news company where I collaborated with lead product managers and ML engineers within a 24/7 newsroom environment alongside former journalists transitioning their expertise to tech.</p>
+            </div>
+            
+            <div class="experience">
+                <h3>Founding News Editor at <a href="https://www.newsbreak.com/headlines">NewsBreak</a></h3>
+                <p>AI-powered local news platform. Worked on push notification engagement strategies, newsletter growth initiatives, news ranking algorithms, local content development, and election coverage features.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="commonplace" class="section">
+        <h1>commonplace book</h1>
+        
+        <div class="content">
+            <div class="quote">
+                Having lived nearly half of my life far from my birth country, I describe my Chineseness as a linguistic belonging.
+                <div class="quote-author">―Yangyang Cheng</div>
+            </div>
+            
+            <div class="quote">
+                Perhaps home is not a place but simply an irrevocable condition.
+                <div class="quote-author">― James Baldwin</div>
+            </div>
+            
+            <div class="quote">
+                All you have to do is write one true sentence. Write the truest sentence that you know. So finally I would write one true sentence, and then go on from there.
+                <div class="quote-author">– Ernest Hemingway</div>
+            </div>
+            
+            <div class="quote">
+                Computing and new media depend upon flesh-and-bone metabolism. Our "virtual worlds" are made possible by battalions of human beings.
+                <div class="quote-author">— Thomas S. Mullaney</div>
+            </div>
+            
+            <div class="quote">
+                Actually, time itself is neutral; it can be used either destructively or constructively.
+                <div class="quote-author">― Martin Luther King</div>
+            </div>
+            
+            <div class="quote">
+                When you light a candle, you also cast a shadow.
+                <div class="quote-author">― Ursula K. Le Guin</div>
+            </div>
+            
+            <div class="quote">
+                I write entirely to find out what I'm thinking, what I'm looking at, what I see and what it means. What I want and what I fear.
+                <div class="quote-author">― Joan Didion</div>
+            </div>
+            
+            <div class="quote">
+                Humans are the reproductive organs of technology.
+                <div class="quote-author">― Kevin Kelly</div>
+            </div>
+            
+            <div class="quote">
+                People are made of stories. Our memories are not the impartial accumulation of every second we've lived; they're the narrative that we assembled out of selected moments.
+                <div class="quote-author">― Ted Chiang</div>
+            </div>
+
+            <!-- New Quotes Added -->
+            <div class="quote">
+                Where am I to find strength and hope in this world? In my work, in trying to write well. What's a writer's calling, now or at any time? To write, to try to write well. What work will make a difference? Well-made work, honest work, writing well written.
+                <div class="quote-author">― Ursula K. Le Guin</div>
+            </div>
+
+            <div class="quote">
+                I have stolen ideas from every book I've ever read. My principle for researching a novel is 'Read like a butterfly, write like a bee,' and if this story contains any honey, it is because of the quality of the nectar I have found in the work of better writers.
+                <div class="quote-author">– Phillip Pullman</div>
+            </div>
+
+            <div class="quote">
+                In our time, political speech and writing are largely the defense of the indefensible.
+                <div class="quote-author">― George Orwell</div>
+            </div>
+
+            <div class="quote">
+                A man who has a language consequently possesses the world expressed and implied by that language.
+                <div class="quote-author">― Frantz Fanon</div>
+            </div>
+
+            <div class="quote">
+                Infrastructures are matter that enable the movement of other matter. Their peculiar ontology lies in the facts that they are things and also the relation between things. As things they are present to the senses, yet they are also displaced in the focus on the matter they move around. We often see computers not cables, light not electricity, taps and water but not pipes and sewers.
+                <div class="quote-author">― Brian Larkin</div>
+            </div>
+
+            <div class="quote">
+                Color is not a human or a personal reality; it is a political reality.
+                <div class="quote-author">― James Baldwin</div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        function showSection(sectionName) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show the selected section
+            document.getElementById(sectionName).classList.add('active');
+        }
+    </script>
 </body>
 </html>
-<blockquote>
-    <p>Actually, time itself is neutral; it can be used either destructively or constructively.</p>
-    <footer>― Martin Luther King</footer>
-</blockquote>
-<blockquote>
-    <p>Omit needless words.</p>
-    <footer>― <a href="https://www.gutenberg.org/files/37134/37134-h/37134-h.htm">The Elements of Style</a></footer>
-</blockquote>
-
-<blockquote>
-    <p>The clearest way into the Universe is through a forest wilderness.</p>
-    <footer>― John Muir</footer>
-</blockquote>
-
-<blockquote>
-    <p>When you light a candle, you also cast a shadow.</p>
-    <footer>― Ursula K. Le Guin</footer>
-</blockquote>
-
-<blockquote>
-    <p>I write entirely to find out what I'm thinking, what I'm looking at, what I see and what it means. What I want and what I fear.</p>
-    <footer>― Joan Didion</footer>
-</blockquote>
-
-<blockquote>
-    <p>Humans are the reproductive organs of technology.</p>
-    <footer>― Kevin Kelly</footer>
-</blockquote>
-
-<blockquote>
-    <p>People are made of stories. Our memories are not the impartial accumulation of every second we've lived; they're the narrative that we assembled out of selected moments.</p>
-    <footer>― Ted Chiang</footer>
-</blockquote>
-
-<h3>Other obsessions:</h3>
-<ul>
-    <li>I occasionally paint (oil painting, soft oil pastel, acrylic, traditional Chinese ink painting)</li>
-    <li>Visiting museums gives me highs</li>
-    <li>I feel alive and deeply connected to nature when snowboarding, mountain biking, and hiking</li>
-    <li>I occasionally indulge myself in rabbit holes of Isamu Noguchi, I.M. Pei, Tadao Ando, Nam June Paik, Xu Bing, Cao Fei, and many, many other artists</li>
-    <li>I love cooking(!)</li>
-    <li>A cinephile myself, I always need movie recommendations. I shall not expand because that's a topic that needs many more pages.</li>
-</ul>
-
-👋 hello (at) afrazhaowang at gmail dot com
