@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Focus — Afra Wang</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #f5f5f5;
+            color: #000;
+            min-height: 100vh;
+        }
+
+        /* ── SETUP SCREEN ── */
+        #setup {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 60px 20px 60px;
+        }
+
+        .back-link {
+            display: inline-block;
+            font-size: 14px;
+            color: #0066cc;
+            text-decoration: underline;
+            margin-bottom: 64px;
+        }
+
+        .back-link:hover { background-color: #e6f2ff; }
+
+        .setup-heading {
+            font-size: 36px;
+            font-weight: normal;
+            margin-bottom: 52px;
+        }
+
+        .setup-progress { margin-bottom: 60px; }
+
+        .setup-progress-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #999;
+            margin-bottom: 14px;
+        }
+
+        .setup-bar {
+            width: 100%;
+            height: 6px;
+            background: #ddd;
+            margin-bottom: 14px;
+        }
+
+        .setup-bar-fill {
+            height: 100%;
+            background: #0066cc;
+            transition: width 0.4s ease;
+            max-width: 100%;
+        }
+
+        .setup-words {
+            font-size: 28px;
+        }
+
+        .goal-met { color: #0066cc; }
+
+        .input-label {
+            display: block;
+            font-size: 18px;
+            margin-bottom: 14px;
+        }
+
+        #assignment-input {
+            font-family: 'Courier New', monospace;
+            font-size: 22px;
+            width: 100%;
+            padding: 10px 0;
+            border: none;
+            border-bottom: 2px solid #000;
+            background: transparent;
+            outline: none;
+            color: #000;
+            margin-bottom: 52px;
+        }
+
+        #assignment-input::placeholder { color: #ccc; }
+        #assignment-input:focus { border-bottom-color: #0066cc; }
+        #assignment-input.error { border-bottom-color: #cc0000; }
+
+        .start-btn {
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            padding: 12px 36px;
+            background: #000;
+            color: #f5f5f5;
+            border: 2px solid #000;
+            cursor: pointer;
+            letter-spacing: 1px;
+        }
+
+        .start-btn:hover {
+            background: #0066cc;
+            border-color: #0066cc;
+        }
+
+        /* ── FOCUS SCREEN ── */
+        #focus {
+            display: none;
+            max-width: 840px;
+            margin: 0 auto;
+            padding: 28px 20px 40px;
+        }
+
+        .focus-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 48px;
+        }
+
+        .exit-btn {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #999;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            text-decoration: underline;
+        }
+
+        .exit-btn:hover { color: #000; }
+
+        .session-info {
+            font-size: 12px;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Giant assignment name */
+        #assignment-display {
+            font-size: clamp(32px, 7vw, 80px);
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            line-height: 1.05;
+            word-break: break-word;
+            margin-bottom: 36px;
+        }
+
+        /* Timer mode */
+        #timer-mode {
+            text-align: center;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #bbb;
+            margin-bottom: 4px;
+            transition: color 0.3s;
+        }
+
+        #timer-mode.is-break { color: #0066cc; }
+
+        /* Timer digits */
+        #timer-display {
+            font-size: clamp(72px, 15vw, 136px);
+            text-align: center;
+            letter-spacing: 2px;
+            font-weight: normal;
+            line-height: 1;
+            margin-bottom: 24px;
+        }
+
+        #timer-display.flash {
+            animation: blink 0.4s ease 3;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.15; }
+        }
+
+        /* Timer controls */
+        .timer-controls {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 44px;
+        }
+
+        .t-btn {
+            font-family: 'Courier New', monospace;
+            font-size: 15px;
+            padding: 8px 26px;
+            border: 1px solid #000;
+            background: transparent;
+            color: #000;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+        }
+
+        .t-btn.primary {
+            background: #000;
+            color: #f5f5f5;
+        }
+
+        .t-btn:hover {
+            background: #0066cc;
+            color: #f5f5f5;
+            border-color: #0066cc;
+        }
+
+        /* Break message */
+        #break-msg {
+            display: none;
+            text-align: center;
+            font-size: 18px;
+            color: #888;
+            font-style: italic;
+            margin-bottom: 44px;
+        }
+
+        /* Textarea */
+        #writing-area {
+            width: 100%;
+            min-height: 300px;
+            font-family: 'Courier New', monospace;
+            font-size: 17px;
+            line-height: 1.8;
+            padding: 22px 26px;
+            border: 1px solid #ddd;
+            background: #fff;
+            outline: none;
+            resize: vertical;
+            color: #000;
+            transition: border-color 0.2s, opacity 0.3s;
+        }
+
+        #writing-area:focus { border-color: #0066cc; }
+
+        #writing-area.dimmed {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* Word count bar */
+        .wc-bar {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 14px;
+        }
+
+        .wc-text {
+            font-size: 15px;
+            white-space: nowrap;
+            min-width: 170px;
+        }
+
+        .wc-text .met {
+            color: #0066cc;
+            font-weight: bold;
+        }
+
+        .wc-track {
+            flex: 1;
+            height: 4px;
+            background: #ddd;
+        }
+
+        .wc-fill {
+            height: 100%;
+            background: #0066cc;
+            transition: width 0.3s ease;
+            max-width: 100%;
+        }
+
+        .wc-pct {
+            font-size: 13px;
+            color: #bbb;
+            min-width: 38px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── SETUP ── -->
+<div id="setup">
+    <a href="index.html" class="back-link">← afra wang</a>
+
+    <h1 class="setup-heading">daily writing session</h1>
+
+    <div class="setup-progress">
+        <div class="setup-progress-label">today's progress</div>
+        <div class="setup-bar">
+            <div class="setup-bar-fill" id="s-fill" style="width:0%"></div>
+        </div>
+        <div class="setup-words" id="s-words">0 / 2,000 words</div>
+    </div>
+
+    <label class="input-label" for="assignment-input">what are you writing today?</label>
+    <input
+        type="text"
+        id="assignment-input"
+        placeholder="article title, essay topic, draft name..."
+        autocomplete="off"
+        spellcheck="false"
+    >
+
+    <button class="start-btn" onclick="startSession()">start writing →</button>
+</div>
+
+<!-- ── FOCUS ── -->
+<div id="focus">
+    <div class="focus-top">
+        <button class="exit-btn" onclick="exitSession()">← exit</button>
+        <span class="session-info" id="session-info">session 1 · focus</span>
+    </div>
+
+    <div id="assignment-display">assignment</div>
+
+    <div id="timer-mode">focus</div>
+    <div id="timer-display">25:00</div>
+
+    <div class="timer-controls">
+        <button class="t-btn primary" id="main-btn" onclick="toggleTimer()">start</button>
+        <button class="t-btn" onclick="resetTimer()">reset</button>
+        <button class="t-btn" id="skip-btn" onclick="skipBreak()" style="display:none">skip break →</button>
+    </div>
+
+    <div id="break-msg">step away. breathe. back soon.</div>
+
+    <textarea
+        id="writing-area"
+        placeholder="start writing here..."
+        oninput="onWrite()"
+    ></textarea>
+
+    <div class="wc-bar">
+        <div class="wc-text" id="wc-text">0 / 2,000 words</div>
+        <div class="wc-track">
+            <div class="wc-fill" id="wc-fill" style="width:0%"></div>
+        </div>
+        <div class="wc-pct" id="wc-pct">0%</div>
+    </div>
+</div>
+
+<script>
+const GOAL = 2000;
+const WORK_S = 25 * 60;
+const SHORT_S = 5 * 60;
+const LONG_S = 15 * 60;
+const SESSIONS_FOR_LONG = 4;
+
+let timerInterval = null;
+let secondsLeft = WORK_S;
+let isRunning = false;
+let isBreak = false;
+let completedSessions = 0;
+let currentSession = 1;
+
+// ─ Storage ─
+function todayKey() {
+    return 'afra-focus-' + new Date().toISOString().slice(0, 10);
+}
+
+function loadToday() {
+    try { return JSON.parse(localStorage.getItem(todayKey())) || { words: 0, text: '' }; }
+    catch { return { words: 0, text: '' }; }
+}
+
+function saveToday(words, text) {
+    localStorage.setItem(todayKey(), JSON.stringify({ words, text }));
+}
+
+function loadAssignment() {
+    return localStorage.getItem('afra-assignment') || '';
+}
+
+function saveAssignment(name) {
+    localStorage.setItem('afra-assignment', name);
+}
+
+// ─ Word count ─
+function countWords(text) {
+    const t = text.trim();
+    return t ? t.split(/\s+/).length : 0;
+}
+
+function onWrite() {
+    const text = document.getElementById('writing-area').value;
+    const words = countWords(text);
+    saveToday(words, text);
+    renderWordUI(words);
+}
+
+function renderWordUI(words) {
+    const pct = Math.min(100, Math.round(words / GOAL * 100));
+    const el = document.getElementById('wc-text');
+    if (words >= GOAL) {
+        el.innerHTML = `<span class="met">${words.toLocaleString()} words — done! ✓</span>`;
+    } else {
+        el.textContent = `${words.toLocaleString()} / 2,000 words`;
+    }
+    document.getElementById('wc-fill').style.width = pct + '%';
+    document.getElementById('wc-pct').textContent = pct + '%';
+}
+
+// ─ Timer ─
+function fmt(secs) {
+    return String(Math.floor(secs / 60)).padStart(2, '0') + ':' + String(secs % 60).padStart(2, '0');
+}
+
+function renderTimer() {
+    document.getElementById('timer-display').textContent = fmt(secondsLeft);
+}
+
+function toggleTimer() {
+    isRunning ? pause() : resume();
+}
+
+function resume() {
+    isRunning = true;
+    document.getElementById('main-btn').textContent = 'pause';
+    timerInterval = setInterval(tick, 1000);
+}
+
+function pause() {
+    isRunning = false;
+    clearInterval(timerInterval);
+    document.getElementById('main-btn').textContent = 'start';
+}
+
+function resetTimer() {
+    pause();
+    isBreak = false;
+    secondsLeft = WORK_S;
+    renderTimer();
+    applyWorkUI();
+}
+
+function tick() {
+    secondsLeft--;
+    if (secondsLeft <= 0) {
+        phaseEnd();
+    } else {
+        renderTimer();
+    }
+}
+
+function beep() {
+    try {
+        const ac = new (window.AudioContext || window.webkitAudioContext)();
+        [0, 0.35, 0.7].forEach(delay => {
+            const osc = ac.createOscillator();
+            const g = ac.createGain();
+            osc.connect(g);
+            g.connect(ac.destination);
+            osc.frequency.value = 660;
+            g.gain.setValueAtTime(0.2, ac.currentTime + delay);
+            g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + delay + 0.3);
+            osc.start(ac.currentTime + delay);
+            osc.stop(ac.currentTime + delay + 0.35);
+        });
+    } catch {}
+}
+
+function flashTimer() {
+    const el = document.getElementById('timer-display');
+    el.classList.remove('flash');
+    void el.offsetWidth;
+    el.classList.add('flash');
+    setTimeout(() => el.classList.remove('flash'), 1500);
+}
+
+function phaseEnd() {
+    clearInterval(timerInterval);
+    isRunning = false;
+    flashTimer();
+    beep();
+
+    if (!isBreak) {
+        completedSessions++;
+        const isLong = completedSessions % SESSIONS_FOR_LONG === 0;
+        secondsLeft = isLong ? LONG_S : SHORT_S;
+        isBreak = true;
+        renderTimer();
+        applyBreakUI(isLong ? 'long break' : 'short break');
+        resume(); // auto-start break countdown
+    } else {
+        isBreak = false;
+        currentSession = completedSessions + 1;
+        secondsLeft = WORK_S;
+        renderTimer();
+        applyWorkUI();
+        // let user decide when to start next session
+    }
+}
+
+function skipBreak() {
+    clearInterval(timerInterval);
+    isRunning = false;
+    isBreak = false;
+    currentSession = completedSessions + 1;
+    secondsLeft = WORK_S;
+    renderTimer();
+    applyWorkUI();
+}
+
+function applyWorkUI() {
+    document.getElementById('timer-mode').textContent = 'focus';
+    document.getElementById('timer-mode').classList.remove('is-break');
+    document.getElementById('session-info').textContent = `session ${currentSession} · focus`;
+    document.getElementById('main-btn').textContent = isRunning ? 'pause' : 'start';
+    document.getElementById('skip-btn').style.display = 'none';
+    document.getElementById('break-msg').style.display = 'none';
+    document.getElementById('writing-area').classList.remove('dimmed');
+}
+
+function applyBreakUI(label) {
+    document.getElementById('timer-mode').textContent = label;
+    document.getElementById('timer-mode').classList.add('is-break');
+    document.getElementById('session-info').textContent = `session ${completedSessions} done · ${label}`;
+    document.getElementById('main-btn').textContent = 'pause';
+    document.getElementById('skip-btn').style.display = 'inline-block';
+    document.getElementById('break-msg').style.display = 'block';
+    document.getElementById('writing-area').classList.add('dimmed');
+}
+
+// ─ Session management ─
+function startSession() {
+    const input = document.getElementById('assignment-input');
+    const name = input.value.trim();
+    if (!name) {
+        input.classList.add('error');
+        input.focus();
+        return;
+    }
+    input.classList.remove('error');
+
+    saveAssignment(name);
+
+    const data = loadToday();
+    const words = data.words || countWords(data.text || '');
+
+    document.getElementById('assignment-display').textContent = name.toUpperCase();
+    document.getElementById('writing-area').value = data.text || '';
+    renderWordUI(words);
+
+    clearInterval(timerInterval);
+    isRunning = false;
+    isBreak = false;
+    completedSessions = 0;
+    currentSession = 1;
+    secondsLeft = WORK_S;
+    renderTimer();
+    applyWorkUI();
+
+    document.getElementById('setup').style.display = 'none';
+    document.getElementById('focus').style.display = 'block';
+    setTimeout(() => document.getElementById('writing-area').focus(), 50);
+}
+
+function exitSession() {
+    pause();
+    const text = document.getElementById('writing-area').value;
+    saveToday(countWords(text), text);
+    document.getElementById('focus').style.display = 'none';
+    document.getElementById('setup').style.display = 'block';
+    renderSetupProgress();
+}
+
+function renderSetupProgress() {
+    const data = loadToday();
+    const words = data.words || 0;
+    const pct = Math.min(100, Math.round(words / GOAL * 100));
+    document.getElementById('s-fill').style.width = pct + '%';
+    const el = document.getElementById('s-words');
+    if (words >= GOAL) {
+        el.innerHTML = `<span class="goal-met">${words.toLocaleString()} words — goal complete! ✓</span>`;
+    } else {
+        el.textContent = `${words.toLocaleString()} / 2,000 words`;
+    }
+}
+
+// ─ Init ─
+window.addEventListener('load', () => {
+    const saved = loadAssignment();
+    if (saved) document.getElementById('assignment-input').value = saved;
+    renderSetupProgress();
+    document.getElementById('assignment-input').addEventListener('keydown', e => {
+        if (e.key === 'Enter') startSession();
+    });
+});
+</script>
+
+</body>
+</html>
