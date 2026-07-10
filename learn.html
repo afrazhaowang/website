@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn — Afra Wang</title>
+    <style>
+        /* ── Tokens ── */
+        :root {
+            --bg: #f5f5f5;
+            --surface: #ffffff;
+            --text: #000000;
+            --text-muted: #888;
+            --border: #ddd;
+            --border-light: #eee;
+            --accent: #0066cc;
+            --accent-dim: #e6f2ff;
+            --danger: #cc2200;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #111111;
+                --surface: #1c1c1c;
+                --text: #eeeeee;
+                --text-muted: #5a5a5a;
+                --border: #2e2e2e;
+                --border-light: #242424;
+                --accent: #4d99ff;
+                --accent-dim: #0a1828;
+                --danger: #ff5533;
+            }
+        }
+
+        :root[data-theme="dark"] {
+            --bg: #111111; --surface: #1c1c1c; --text: #eeeeee;
+            --text-muted: #5a5a5a; --border: #2e2e2e; --border-light: #242424;
+            --accent: #4d99ff; --accent-dim: #0a1828; --danger: #ff5533;
+        }
+        :root[data-theme="light"] {
+            --bg: #f5f5f5; --surface: #ffffff; --text: #000000;
+            --text-muted: #888; --border: #ddd; --border-light: #eee;
+            --accent: #0066cc; --accent-dim: #e6f2ff; --danger: #cc2200;
+        }
+
+        /* ── Reset ── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        button, input, textarea, select {
+            font-family: inherit;
+        }
+
+        button { cursor: pointer; }
+
+        /* ── Screen management ── */
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* ── Shared layout ── */
+        .page {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 52px 24px 80px;
+        }
+
+        .back {
+            display: inline-block;
+            font-size: 14px;
+            color: var(--accent);
+            text-decoration: underline;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            margin-bottom: 52px;
+        }
+        .back:hover { background: var(--accent-dim); }
+
+        .page-title {
+            font-size: 38px;
+            font-weight: normal;
+            margin-bottom: 44px;
+            letter-spacing: -0.5px;
+        }
+
+        /* ── Buttons ── */
+        .btn {
+            font-size: 14px;
+            padding: 8px 20px;
+            border: 1px solid var(--text);
+            background: transparent;
+            color: var(--text);
+            letter-spacing: 0.3px;
+            transition: background 0.12s, color 0.12s, border-color 0.12s;
+        }
+        .btn:hover {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        .btn.primary {
+            background: var(--text);
+            color: var(--bg);
+            border-color: var(--text);
+        }
+        .btn.primary:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+        .btn.sm { font-size: 13px; padding: 6px 16px; }
+
+        /* ── HOME SCREEN ── */
+        .home-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 44px;
+        }
+        .home-actions { display: flex; gap: 8px; }
+
+        .cat-list { display: flex; flex-direction: column; gap: 10px; }
+
+        .cat-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--border);
+            padding: 18px 20px;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+        .cat-item:hover { background: var(--accent-dim); }
+
+        .cat-name { font-size: 19px; margin-bottom: 8px; }
+
+        .cat-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mini-bar {
+            flex: 1;
+            max-width: 72px;
+            height: 2px;
+            background: var(--border);
+        }
+        .mini-fill { height: 100%; }
+
+        .empty-note {
+            font-size: 16px;
+            color: var(--text-muted);
+            padding: 20px 0;
+        }
+
+        /* ── STUDY SCREEN ── */
+        #study-screen {
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 32px 24px 60px;
+        }
+
+        .study-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+        .study-cat-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--text-muted);
+        }
+        .study-prog {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Progress bar */
+        .prog-track {
+            width: 100%;
+            height: 2px;
+            background: var(--border);
+            margin-bottom: 36px;
+        }
+        .prog-fill {
+            height: 100%;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        /* ── FLIP CARD ── */
+        .card-wrap {
+            perspective: 1400px;
+            margin-bottom: 22px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .card {
+            position: relative;
+            width: 100%;
+            min-height: 300px;
+            transform-style: preserve-3d;
+            -webkit-transform-style: preserve-3d;
+            transition: transform 0.52s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card.flipped { transform: rotateY(180deg); }
+
+        .card-face {
+            position: absolute;
+            inset: 0;
+            min-height: 300px;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 44px 52px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--border);
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            -webkit-transform: rotateY(180deg);
+        }
+
+        .face-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--text-muted);
+            margin-bottom: 22px;
+        }
+
+        .card-concept {
+            font-size: clamp(20px, 4vw, 30px);
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        .card-explanation {
+            font-size: clamp(14px, 2vw, 17px);
+            line-height: 1.8;
+        }
+
+        .flip-hint {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            color: var(--border);
+            text-align: center;
+            margin-top: 28px;
+        }
+
+        .mastered-tag {
+            display: none;
+            position: absolute;
+            top: 14px;
+            right: 16px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 2px 8px;
+            border: 1px solid;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        /* Study controls */
+        .study-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .study-nav { display: flex; gap: 8px; }
+        .study-actions { display: flex; gap: 8px; }
+
+        .btn-mastered {
+            transition: background 0.12s, color 0.12s, border-color 0.12s;
+        }
+        .btn-shuffle.on { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+        .study-footer {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 18px;
+        }
+
+        .kbd-row {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 14px;
+        }
+        kbd {
+            display: inline-block;
+            padding: 1px 5px;
+            border: 1px solid var(--border);
+            font-family: inherit;
+            font-size: 10px;
+            border-radius: 2px;
+        }
+
+        /* ── ADD / IMPORT FORMS ── */
+        .field { margin-bottom: 36px; }
+
+        .field-label {
+            display: block;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .field-input,
+        .field-textarea,
+        .field-select {
+            width: 100%;
+            font-size: 18px;
+            padding: 8px 0;
+            border: none;
+            border-bottom: 2px solid var(--text);
+            background: transparent;
+            color: var(--text);
+            outline: none;
+            resize: none;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+        .field-input:focus,
+        .field-textarea:focus,
+        .field-select:focus { border-bottom-color: var(--accent); }
+
+        .field-input::placeholder,
+        .field-textarea::placeholder { color: var(--border); }
+
+        .field-textarea { min-height: 96px; line-height: 1.65; }
+        .field-select { cursor: pointer; }
+
+        .form-row { display: flex; gap: 10px; align-items: center; }
+
+        .flash {
+            font-size: 13px;
+            color: var(--accent);
+            opacity: 0;
+            transition: opacity 0.18s;
+        }
+        .flash.show { opacity: 1; }
+
+        /* Import */
+        .import-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.9;
+            border-left: 3px solid var(--border);
+            padding-left: 14px;
+            margin-bottom: 32px;
+        }
+        .import-area {
+            width: 100%;
+            font-size: 14px;
+            line-height: 1.8;
+            padding: 16px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            outline: none;
+            min-height: 220px;
+            resize: vertical;
+            margin-bottom: 8px;
+        }
+        .import-area:focus { border-color: var(--accent); }
+        .import-result { font-size: 13px; margin-top: 12px; white-space: pre-wrap; }
+        .import-result.ok { color: var(--accent); }
+        .import-result.err { color: var(--danger); }
+    </style>
+</head>
+<body>
+
+<!-- ══ HOME ══════════════════════════════════════════════════════════ -->
+<div id="home-screen" class="screen active">
+    <div class="page">
+        <a href="index.html" class="back">← afra wang</a>
+        <div class="home-top">
+            <h1 class="page-title">learn</h1>
+            <div class="home-actions">
+                <button class="btn sm primary" onclick="goAdd()">+ add card</button>
+                <button class="btn sm" onclick="goImport()">import</button>
+            </div>
+        </div>
+        <div class="cat-list" id="cat-list"></div>
+    </div>
+</div>
+
+<!-- ══ STUDY ══════════════════════════════════════════════════════════ -->
+<div id="study-screen" class="screen">
+    <div class="study-top">
+        <button class="back" style="margin-bottom:0" onclick="goHome()">← back</button>
+        <span class="study-cat-label" id="study-cat-label"></span>
+        <span class="study-prog" id="study-prog"></span>
+    </div>
+
+    <div class="prog-track">
+        <div class="prog-fill" id="prog-fill" style="width:0%"></div>
+    </div>
+
+    <div class="card-wrap" onclick="flipCard()">
+        <div class="card" id="the-card">
+            <!-- Front -->
+            <div class="card-face" id="card-front">
+                <div class="mastered-tag" id="mastered-tag">mastered</div>
+                <div class="face-label">concept</div>
+                <div class="card-concept" id="card-concept"></div>
+                <div class="flip-hint">click to reveal</div>
+            </div>
+            <!-- Back -->
+            <div class="card-face card-back" id="card-back">
+                <div class="face-label">explanation</div>
+                <div class="card-explanation" id="card-explanation"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="study-controls">
+        <div class="study-nav">
+            <button class="btn sm" onclick="prevCard()">← prev</button>
+            <button class="btn sm" onclick="nextCard()">next →</button>
+        </div>
+        <div class="study-actions">
+            <button class="btn sm btn-shuffle" id="btn-shuffle" onclick="toggleShuffle()">⇄ shuffle</button>
+            <button class="btn sm btn-mastered" id="btn-mastered" onclick="toggleMastered()">✓ got it</button>
+        </div>
+    </div>
+
+    <div class="study-footer" id="study-footer"></div>
+
+    <div class="kbd-row">
+        <kbd>space</kbd> flip &nbsp;·&nbsp;
+        <kbd>←</kbd> <kbd>→</kbd> navigate &nbsp;·&nbsp;
+        <kbd>g</kbd> got it
+    </div>
+</div>
+
+<!-- ══ ADD ════════════════════════════════════════════════════════════ -->
+<div id="add-screen" class="screen">
+    <div class="page">
+        <button class="back" onclick="goHome()">← back</button>
+        <h1 class="page-title">add a card</h1>
+
+        <div class="field">
+            <label class="field-label" for="f-concept">concept</label>
+            <input type="text" class="field-input" id="f-concept"
+                placeholder="the term or idea" autocomplete="off">
+        </div>
+
+        <div class="field">
+            <label class="field-label" for="f-explanation">explanation</label>
+            <textarea class="field-textarea" id="f-explanation"
+                placeholder="the definition or elaboration"></textarea>
+        </div>
+
+        <div class="field">
+            <label class="field-label" for="f-category">category</label>
+            <select class="field-select" id="f-category"></select>
+        </div>
+
+        <div class="form-row">
+            <button class="btn primary" onclick="submitAdd()">add card</button>
+            <button class="btn" onclick="clearAdd()">clear</button>
+            <span class="flash" id="add-flash">added!</span>
+        </div>
+    </div>
+</div>
+
+<!-- ══ IMPORT ═════════════════════════════════════════════════════════ -->
+<div id="import-screen" class="screen">
+    <div class="page">
+        <button class="back" onclick="goHome()">← back</button>
+        <h1 class="page-title">import cards</h1>
+
+        <div class="import-hint">
+            one card per line &nbsp;·&nbsp; <strong>concept | explanation</strong><br>
+            or with category &nbsp;·&nbsp; <strong>concept | explanation | category</strong><br>
+            lines without a category use the default below
+        </div>
+
+        <div class="field">
+            <label class="field-label" for="f-import-cat">default category</label>
+            <select class="field-select" id="f-import-cat"></select>
+        </div>
+
+        <textarea class="import-area" id="import-text"
+            placeholder="Neural Scaling Laws | Model performance improves predictably with compute, data, and parameters | AI
+Defamiliarization | Shklovsky's concept: art makes the familiar strange, forcing us to see it anew | Literature
+Dual Process Theory | System 1 is fast and intuitive; System 2 is slow and deliberate | Cognitive Science"></textarea>
+
+        <div class="form-row">
+            <button class="btn primary" onclick="submitImport()">import</button>
+            <span class="flash" id="import-flash"></span>
+        </div>
+        <div class="import-result" id="import-result"></div>
+    </div>
+</div>
+
+<script>
+// ═══ Data layer ════════════════════════════════════════════════════════════
+
+const STORE = 'afra-learn-v1';
+
+const DEFAULT_CATS = ['AI', 'Arts', 'History', 'Cognitive Science', 'Writing', 'Literature'];
+
+const CAT_COLORS = {
+    'AI':                '#0066cc',
+    'Arts':              '#7A4A00',
+    'History':           '#3D5C35',
+    'Cognitive Science': '#1A5C80',
+    'Writing':           '#5C2880',
+    'Literature':        '#145C3D',
+};
+const EXTRA_COLORS = ['#663300', '#1A3D66', '#660033', '#334D00', '#4D1A66', '#003D33'];
+
+const SEEDS = [
+    { concept: 'Neural Scaling Laws',
+      explanation: 'The empirical finding that model performance improves predictably with compute, data, and parameters — the foundation of the "bigger is better" paradigm in large language models.',
+      category: 'AI' },
+    { concept: 'Emergent Abilities',
+      explanation: 'Capabilities that appear suddenly in large models at certain scale thresholds, absent in smaller versions — such as arithmetic, chain-of-thought reasoning, and in-context learning.',
+      category: 'AI' },
+    { concept: 'Attention Mechanism',
+      explanation: 'The core operation in Transformers: each token computes a weighted sum over all other tokens, allowing the model to dynamically attend to relevant context anywhere in the sequence.',
+      category: 'AI' },
+    { concept: 'Cognitive Load',
+      explanation: 'The total mental effort being used in working memory. Extraneous load impairs learning; effective instruction minimizes it to free capacity for understanding.',
+      category: 'Cognitive Science' },
+    { concept: 'Dual Process Theory',
+      explanation: "Kahneman's framework: System 1 is fast, automatic, and intuitive; System 2 is slow, deliberate, and effortful. Most everyday decisions rely on System 1 while feeling reasoned.",
+      category: 'Cognitive Science' },
+    { concept: 'Embodied Cognition',
+      explanation: "The thesis that cognition is shaped by the body's interactions with the world — the mind is not a disembodied processor but emerges from sensorimotor experience and environment.",
+      category: 'Cognitive Science' },
+    { concept: "Show Don't Tell",
+      explanation: 'Render experience through specific sensory detail and action rather than abstract summary. Make readers feel rather than simply know — the difference between stating fear and depicting trembling hands.',
+      category: 'Writing' },
+    { concept: 'The Iceberg Theory',
+      explanation: "Hemingway's principle: the dignity of an iceberg rests on only one-eighth being above water. Omitted detail gives writing its strength — the reader senses what is not said.",
+      category: 'Writing' },
+    { concept: 'Voice vs. Style',
+      explanation: "Voice is the author's persistent sensibility across all their work — the fingerprint you'd recognize anywhere. Style is the set of choices made for a particular piece. Voice is deeper and slower to change.",
+      category: 'Writing' },
+    { concept: 'Defamiliarization',
+      explanation: "Viktor Shklovsky's concept (остранение): art makes the familiar strange, forcing perception to slow down and become conscious. The goal is to restore the sensation of life against the numbing of habit.",
+      category: 'Literature' },
+    { concept: 'Free Indirect Discourse',
+      explanation: "A narrative mode that merges the narrator's voice with a character's thoughts — without quotation marks or attribution tags. The reader inhabits a perspective while the narrator's presence persists.",
+      category: 'Literature' },
+    { concept: 'The Unreliable Narrator',
+      explanation: 'A narrator whose credibility is compromised — by self-deception, limited knowledge, or deliberate deception. The reader must read against the narrative to find what is actually true.',
+      category: 'Literature' },
+    { concept: 'Chiaroscuro',
+      explanation: 'The dramatic contrast of light and dark in painting, mastered by Leonardo and Caravaggio. Used to model three-dimensional form, concentrate emotional intensity, and isolate figures from space.',
+      category: 'Arts' },
+    { concept: 'Negative Space',
+      explanation: "The empty space around and between subjects of a composition. In art and design, negative space is as compositionally active as positive form — it defines shape and creates meaning through absence.",
+      category: 'Arts' },
+    { concept: 'Great Man Theory',
+      explanation: "Carlyle's 19th-century view that history is shaped by exceptional individuals of will and vision. Countered by structuralist approaches emphasizing social forces, economic conditions, and contingency.",
+      category: 'History' },
+    { concept: 'Longue Durée',
+      explanation: "Braudel's concept from the Annales school: history operates at multiple timescales — the slow drift of geography and climate beneath the middle rhythm of social structures and the rapid surface of events.",
+      category: 'History' },
+];
+
+function dbLoad() {
+    try { return JSON.parse(localStorage.getItem(STORE)) || null; }
+    catch { return null; }
+}
+function dbSave(db) { localStorage.setItem(STORE, JSON.stringify(db)); }
+
+function dbInit() {
+    let db = dbLoad();
+    if (!db) {
+        db = {
+            categories: [...DEFAULT_CATS],
+            cards: SEEDS.map((s, i) => mkCard(s.concept, s.explanation, s.category, 's' + i)),
+        };
+        dbSave(db);
+    }
+    return db;
+}
+
+function mkCard(concept, explanation, category, id) {
+    return { id: id || uid(), concept, explanation, category,
+             createdAt: new Date().toISOString(), lastSeen: null, mastered: false };
+}
+
+function uid() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+}
+
+let DB = dbInit();
+
+// ═══ Colors ════════════════════════════════════════════════════════════════
+
+function catColor(cat) {
+    if (CAT_COLORS[cat]) return CAT_COLORS[cat];
+    const idx = DB.categories.indexOf(cat);
+    return EXTRA_COLORS[Math.max(0, idx - DEFAULT_CATS.length) % EXTRA_COLORS.length];
+}
+
+// ═══ Screen routing ════════════════════════════════════════════════════════
+
+function show(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+}
+
+function goHome() {
+    DB = dbLoad();
+    renderHome();
+    show('home-screen');
+}
+
+function goAdd() {
+    DB = dbLoad();
+    populateSelect('f-category', true);
+    clearAdd();
+    show('add-screen');
+    setTimeout(() => document.getElementById('f-concept').focus(), 50);
+}
+
+function goImport() {
+    DB = dbLoad();
+    populateSelect('f-import-cat', false);
+    document.getElementById('import-text').value = '';
+    document.getElementById('import-result').textContent = '';
+    flashHide('import-flash');
+    show('import-screen');
+}
+
+// ═══ Home rendering ════════════════════════════════════════════════════════
+
+function renderHome() {
+    const { cards, categories } = DB;
+    const el = document.getElementById('cat-list');
+
+    if (!cards.length) {
+        el.innerHTML = '<div class="empty-note">no cards yet — add some to get started.</div>';
+        return;
+    }
+
+    let html = '';
+
+    // All cards
+    const allM = cards.filter(c => c.mastered).length;
+    html += catRow('__all__', 'all cards', cards.length, allM, '#000');
+
+    categories.forEach(cat => {
+        const cc = cards.filter(c => c.category === cat);
+        if (!cc.length) return;
+        const m = cc.filter(c => c.mastered).length;
+        html += catRow(cat, cat, cc.length, m, catColor(cat));
+    });
+
+    el.innerHTML = html;
+}
+
+function catRow(key, label, total, mastered, color) {
+    const p = total ? Math.round(mastered / total * 100) : 0;
+    const safeKey = esc(key);
+    return `<div class="cat-item" data-cat="${safeKey}" style="border-left-color:${color}">
+        <div class="cat-name">${esc(label)}</div>
+        <div class="cat-meta">
+            ${total} card${total !== 1 ? 's' : ''} &middot; ${mastered} mastered
+            <div class="mini-bar">
+                <div class="mini-fill" style="width:${p}%;background:${color}"></div>
+            </div>
+            ${p}%
+        </div>
+    </div>`;
+}
+
+document.getElementById('cat-list').addEventListener('click', e => {
+    const item = e.target.closest('.cat-item');
+    if (item) startStudy(item.dataset.cat);
+});
+
+// ═══ Category selects ══════════════════════════════════════════════════════
+
+function populateSelect(id, withNew) {
+    const sel = document.getElementById(id);
+    const base = DB.categories.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+    sel.innerHTML = base + (withNew ? '<option value="__new__">+ new category...</option>' : '');
+
+    sel.onchange = function () {
+        if (this.value !== '__new__') return;
+        const name = prompt('New category name:');
+        if (name && name.trim()) {
+            const clean = name.trim();
+            if (!DB.categories.includes(clean)) { DB.categories.push(clean); dbSave(DB); }
+            populateSelect(id, withNew);
+            this.value = clean;
+        } else {
+            this.value = DB.categories[0] || '';
+        }
+    };
+}
+
+// ═══ Study session ═════════════════════════════════════════════════════════
+
+let deck = [], deckIdx = 0, isFlipped = false, isShuffled = false, activeCat = '';
+
+function heuristicOrder(cards) {
+    const unseen   = cards.filter(c => !c.lastSeen && !c.mastered);
+    const learning = cards.filter(c => c.lastSeen  && !c.mastered)
+                          .sort((a, b) => +new Date(a.lastSeen) - +new Date(b.lastSeen));
+    const mastered = cards.filter(c => c.mastered)
+                          .sort((a, b) => +new Date(a.lastSeen || 0) - +new Date(b.lastSeen || 0));
+    return [...unseen, ...learning, ...mastered];
+}
+
+function shuffleArr(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+function startStudy(cat) {
+    DB = dbLoad();
+    activeCat = cat;
+    const pool = cat === '__all__' ? DB.cards : DB.cards.filter(c => c.category === cat);
+    if (!pool.length) return;
+    deck = heuristicOrder(pool);
+    deckIdx = 0; isFlipped = false; isShuffled = false;
+    document.getElementById('btn-shuffle').classList.remove('on');
+    document.getElementById('study-cat-label').textContent = cat === '__all__' ? 'all cards' : cat;
+    show('study-screen');
+    renderCard();
+}
+
+function renderCard() {
+    if (!deck.length) return;
+    const card = deck[deckIdx];
+    const color = catColor(activeCat === '__all__' ? card.category : activeCat);
+
+    // Reset flip
+    isFlipped = false;
+    document.getElementById('the-card').classList.remove('flipped');
+
+    // Content
+    document.getElementById('card-concept').textContent     = card.concept;
+    document.getElementById('card-explanation').textContent = card.explanation;
+
+    // Category color on top border of both faces
+    document.getElementById('card-front').style.borderTopColor = color;
+    document.getElementById('card-back').style.borderTopColor  = color;
+
+    // Mastered badge
+    const tag = document.getElementById('mastered-tag');
+    tag.style.display     = card.mastered ? 'block' : 'none';
+    tag.style.color       = color;
+    tag.style.borderColor = color;
+
+    // Got-it button
+    const btn = document.getElementById('btn-mastered');
+    if (card.mastered) {
+        btn.textContent        = '✓ mastered';
+        btn.style.background   = color;
+        btn.style.color        = '#fff';
+        btn.style.borderColor  = color;
+    } else {
+        btn.textContent        = '✓ got it';
+        btn.style.background   = '';
+        btn.style.color        = color;
+        btn.style.borderColor  = color;
+    }
+
+    // Progress
+    const p = Math.round((deckIdx + 1) / deck.length * 100);
+    document.getElementById('study-prog').textContent      = `${deckIdx + 1} / ${deck.length}`;
+    document.getElementById('prog-fill').style.width       = p + '%';
+    document.getElementById('prog-fill').style.background  = color;
+
+    // Footer
+    const m = deck.filter(c => c.mastered).length;
+    document.getElementById('study-footer').textContent =
+        `${m} mastered · ${deck.length - m} to go`;
+
+    // Mark seen
+    card.lastSeen = new Date().toISOString();
+    const live = DB.cards.find(c => c.id === card.id);
+    if (live) { live.lastSeen = card.lastSeen; dbSave(DB); }
+}
+
+function flipCard() {
+    isFlipped = !isFlipped;
+    document.getElementById('the-card').classList.toggle('flipped', isFlipped);
+}
+
+function nextCard() { deckIdx = (deckIdx + 1) % deck.length; renderCard(); }
+function prevCard() { deckIdx = (deckIdx - 1 + deck.length) % deck.length; renderCard(); }
+
+function toggleShuffle() {
+    const cur = deck[deckIdx];
+    isShuffled = !isShuffled;
+    const pool = activeCat === '__all__' ? DB.cards : DB.cards.filter(c => c.category === activeCat);
+    deck = isShuffled ? shuffleArr(deck) : heuristicOrder(pool);
+    deckIdx = Math.max(0, deck.findIndex(c => c.id === cur.id));
+    document.getElementById('btn-shuffle').classList.toggle('on', isShuffled);
+    renderCard();
+}
+
+function toggleMastered() {
+    const card = deck[deckIdx];
+    card.mastered = !card.mastered;
+    const live = DB.cards.find(c => c.id === card.id);
+    if (live) { live.mastered = card.mastered; dbSave(DB); }
+    renderCard();
+}
+
+// ═══ Add card ══════════════════════════════════════════════════════════════
+
+function submitAdd() {
+    const concept     = document.getElementById('f-concept').value.trim();
+    const explanation = document.getElementById('f-explanation').value.trim();
+    const category    = document.getElementById('f-category').value;
+
+    if (!concept)     { document.getElementById('f-concept').style.borderBottomColor     = 'var(--danger)'; return; }
+    if (!explanation) { document.getElementById('f-explanation').style.borderBottomColor = 'var(--danger)'; return; }
+
+    document.getElementById('f-concept').style.borderBottomColor     = '';
+    document.getElementById('f-explanation').style.borderBottomColor = '';
+
+    DB.cards.push(mkCard(concept, explanation, category));
+    dbSave(DB);
+    flashShow('add-flash', 'card added!');
+    document.getElementById('f-concept').value     = '';
+    document.getElementById('f-explanation').value = '';
+    document.getElementById('f-concept').focus();
+}
+
+function clearAdd() {
+    ['f-concept', 'f-explanation'].forEach(id => {
+        document.getElementById(id).value = '';
+        document.getElementById(id).style.borderBottomColor = '';
+    });
+    flashHide('add-flash');
+}
+
+// ═══ Import ════════════════════════════════════════════════════════════════
+
+function submitImport() {
+    const text   = document.getElementById('import-text').value;
+    const defCat = document.getElementById('f-import-cat').value;
+    const lines  = text.split('\n').map(l => l.trim()).filter(Boolean);
+    let added = 0, errs = [];
+
+    lines.forEach((line, i) => {
+        const parts = line.split('|').map(p => p.trim());
+        if (parts.length < 2) { errs.push(`line ${i + 1}: need at least concept | explanation`); return; }
+        const [concept, explanation, rawCat] = parts;
+        if (!concept || !explanation) { errs.push(`line ${i + 1}: empty field`); return; }
+        const cat = rawCat || defCat;
+        if (!DB.categories.includes(cat)) DB.categories.push(cat);
+        DB.cards.push(mkCard(concept, explanation, cat));
+        added++;
+    });
+
+    dbSave(DB);
+    const res = document.getElementById('import-result');
+
+    if (added) {
+        flashShow('import-flash', `${added} card${added !== 1 ? 's' : ''} added!`);
+        document.getElementById('import-text').value = '';
+        res.textContent = '';
+    }
+    if (errs.length) {
+        res.textContent = errs.join('\n');
+        res.className   = 'import-result err';
+    }
+}
+
+// ═══ Keyboard shortcuts ════════════════════════════════════════════════════
+
+document.addEventListener('keydown', e => {
+    if (!document.getElementById('study-screen').classList.contains('active')) return;
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    const k = e.key;
+    if (k === ' ' || k === 'f') { e.preventDefault(); flipCard(); }
+    if (k === 'ArrowRight' || k === 'l' || k === 'L') nextCard();
+    if (k === 'ArrowLeft'  || k === 'h' || k === 'H') prevCard();
+    if (k === 'g' || k === 'G') toggleMastered();
+});
+
+// ═══ Flash helpers ═════════════════════════════════════════════════════════
+
+function flashShow(id, msg) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2200);
+}
+function flashHide(id) { document.getElementById(id).classList.remove('show'); }
+
+// ═══ Util ══════════════════════════════════════════════════════════════════
+
+function esc(s) {
+    return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+// ═══ Init ══════════════════════════════════════════════════════════════════
+
+window.addEventListener('load', () => {
+    renderHome();
+    document.getElementById('f-concept').addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); document.getElementById('f-explanation').focus(); }
+    });
+});
+</script>
+
+</body>
+</html>
