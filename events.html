@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SF AI Event Radar — Afra Wang</title>
+    <meta name="description" content="A scored, curated radar of the highest-signal AI events, salons, parties, and conferences in San Francisco and the Bay Area, evaluated for a writer covering AI, China, and Silicon Valley.">
+    <style>
+        :root {
+            --bg: #f5f5f5;
+            --ink: #000;
+            --muted: #666;
+            --faint: #999;
+            --rule: #ddd;
+            --link: #0066cc;
+            --link-bg: #e6f2ff;
+            --hot: #cc3300;
+            --ok: #2e7d32;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: var(--bg);
+            color: var(--ink);
+            line-height: 1.35;
+            margin: 0 auto;
+            padding: 20px;
+            max-width: 900px;
+        }
+        a { color: var(--link); text-decoration: underline; }
+        a:hover { background-color: var(--link-bg); }
+        .nav { margin-bottom: 40px; font-size: 18px; }
+        .nav a { margin-right: 15px; }
+        .nav .separator { color: #333; margin: 0 5px; }
+        h1 { font-size: 44px; font-weight: normal; margin: 0 0 10px; color: #333; line-height: 1.1; }
+        h2 { font-size: 26px; font-weight: normal; margin: 50px 0 15px; color: #333; border-bottom: 3px solid var(--link); padding-bottom: 6px; }
+        h3 { font-size: 20px; font-weight: normal; margin: 0 0 6px; }
+        .sub { color: var(--muted); font-size: 16px; margin-bottom: 30px; }
+        .content { font-size: 17px; }
+        .content p { margin: 0 0 14px; }
+        .small { font-size: 14px; color: var(--muted); }
+        .tiny { font-size: 13px; color: var(--faint); }
+
+        /* rubric */
+        .rubric { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin: 16px 0; }
+        .rubric div { border-left: 3px solid var(--link); padding-left: 12px; font-size: 15px; }
+        .rubric b { display: block; font-size: 16px; }
+
+        /* filters */
+        .filters { display: flex; flex-wrap: wrap; gap: 8px 10px; margin: 16px 0 10px; align-items: center; font-size: 14px; }
+        .filters .group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-right: 12px; }
+        .filters .label { color: var(--muted); margin-right: 2px; }
+        .chip {
+            border: 1px solid #333; background: #fff; color: #000; padding: 3px 9px;
+            font-family: inherit; font-size: 14px; cursor: pointer; border-radius: 2px;
+        }
+        .chip:hover { background: var(--link-bg); }
+        .chip.on { background: #000; color: #fff; border-color: #000; }
+        select, input[type=search] {
+            font-family: inherit; font-size: 14px; padding: 4px 6px; border: 1px solid #333; background: #fff; border-radius: 2px;
+        }
+        input[type=search] { min-width: 200px; }
+        .count { color: var(--muted); font-size: 14px; margin: 6px 0 18px; }
+
+        /* cards */
+        .card {
+            border-top: 1px solid var(--rule);
+            padding: 22px 0 22px 20px;
+            border-left: 3px solid var(--rule);
+            margin-bottom: 4px;
+        }
+        .card.tier-1 { border-left-color: var(--hot); }
+        .card.tier-2 { border-left-color: var(--link); }
+        .card.past { opacity: .55; }
+        .card .head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; align-items: baseline; }
+        .card .meta { font-size: 14px; color: var(--muted); margin: 4px 0 10px; }
+        .card .meta span + span::before { content: " · "; color: var(--faint); }
+        .badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 12px; }
+        .badge { font-size: 12px; padding: 2px 7px; border: 1px solid #333; border-radius: 2px; background: #fff; letter-spacing: .02em; }
+        .badge.hot { border-color: var(--hot); color: var(--hot); }
+        .badge.soon { background: #000; color: #fff; border-color: #000; }
+        .badge.ok { border-color: var(--ok); color: var(--ok); }
+        .badge.unv { border-color: var(--faint); color: var(--faint); border-style: dashed; }
+        .scores { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 6px 18px; font-size: 13px; color: var(--muted); margin: 10px 0 14px; max-width: 700px; }
+        .scores .bar { display: inline-block; letter-spacing: 1px; color: #000; }
+        .composite { font-size: 22px; color: #333; white-space: nowrap; }
+        .composite small { font-size: 13px; color: var(--faint); }
+        .eval p { margin: 0 0 8px; font-size: 15.5px; }
+        .eval b { color: #333; }
+        .links { font-size: 14px; margin-top: 10px; }
+        .links a { margin-right: 14px; }
+        details summary { cursor: pointer; color: var(--link); font-size: 15px; text-decoration: underline; list-style: none; }
+        details summary::-webkit-details-marker { display: none; }
+        details summary:hover { background: var(--link-bg); }
+        details[open] summary { margin-bottom: 8px; }
+
+        /* sources */
+        .source { border-bottom: 1px solid var(--rule); padding: 12px 0; font-size: 15px; }
+        .source b { font-weight: normal; }
+        .source .sig { color: var(--muted); font-size: 13px; }
+        .routine li { margin-bottom: 10px; }
+        .playbook li { margin-bottom: 12px; }
+        .legend { font-size: 13px; color: var(--muted); margin-top: 6px; }
+        .legend i { display: inline-block; width: 12px; height: 12px; vertical-align: middle; margin-right: 4px; }
+        footer { margin: 60px 0 20px; font-size: 13px; color: var(--faint); border-top: 1px solid var(--rule); padding-top: 14px; }
+        @media (max-width: 600px) { h1 { font-size: 34px; } body { padding: 14px; } .card { padding-left: 12px; } }
+        @media print { .filters, .nav { display: none; } .card { break-inside: avoid; } }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <a href="index.html">home</a>
+        <span class="separator">•</span>
+        <a href="index.html#writings">writings</a>
+        <span class="separator">•</span>
+        <a href="events.html">ai event radar</a>
+    </nav>
+
+    <h1>sf ai event radar</h1>
+    <p class="sub">The rooms worth being in, scored for a writer covering AI, China, and Silicon Valley. Last updated <span id="updated"></span>.</p>
+
+    <div class="content">
+        <p>You keep missing the rooms that matter because the good ones never reach a public calendar: they travel through Luma approval lists, a host's WhatsApp group, a fellowship alumni email, or a friend's plus-one. This page is the fix. It is a curated, scored radar of the Bay Area's highest-signal AI events, salons, parties, and networks, each evaluated for one question: <em>what does a writer covering AI, China, and Silicon Valley actually get from being there?</em></p>
+        <p>It is deliberately opinionated. Mega-conferences that generate press releases and little else are scored low or left out. Small rooms where the agenda is set are scored high even when they are hard to get into, because the path in is described for each one.</p>
+
+        <h2>act now</h2>
+        <p class="small">Deadlines and events within the next 45 days, drawn live from the list below.</p>
+        <ul id="act-now" class="playbook"></ul>
+
+        <h2>how events are scored</h2>
+        <div class="rubric">
+            <div><b>Signal density (35%)</b>How many people who actually set the agenda are in the room, per square foot. A 40-person dinner with three lab founders beats a 10,000-person expo.</div>
+            <div><b>Writer ROI (35%)</b>Story material, quotable sources, editors and commissioning opportunities, distribution for <em>Concurrent</em>. Would a day here produce a piece, a source, or a relationship?</div>
+            <div><b>China × SV relevance (15%)</b>How directly the room feeds your beat: US–China AI, open models, chips, the diaspora founder scene, the "Industrial Party" mind.</div>
+            <div><b>Exclusivity (15%)</b>How hard it is to get in. Scarcity is a proxy for candor: people speak differently when the room is curated and off the record.</div>
+        </div>
+        <p class="small">Composite score is out of 5. <span style="color:var(--hot)">Red bar</span> = tier 1, plan the season around it. <span style="color:var(--link)">Blue bar</span> = tier 2, go if the timing works. Grey = worth knowing about. Dates marked <span class="badge unv">unverified</span> follow the event's usual pattern and need confirming on the official page.</p>
+
+        <h2>the radar</h2>
+        <div class="filters" id="filters">
+            <div class="group"><span class="label">type</span><div id="f-type"></div></div>
+            <div class="group"><span class="label">access</span><div id="f-access"></div></div>
+            <div class="group"><span class="label">when</span>
+                <select id="f-when">
+                    <option value="all">everything</option>
+                    <option value="30">next 30 days</option>
+                    <option value="90">next 90 days</option>
+                    <option value="180">next 6 months</option>
+                    <option value="recurring">recurring / ongoing</option>
+                    <option value="deadline">has an application or deadline</option>
+                </select>
+            </div>
+            <div class="group"><span class="label">sort</span>
+                <select id="f-sort">
+                    <option value="score">by score</option>
+                    <option value="date">by date</option>
+                    <option value="deadline">by deadline</option>
+                </select>
+            </div>
+            <div class="group"><input type="search" id="f-q" placeholder="search…" aria-label="search events"></div>
+            <button class="chip" id="f-reset">reset</button>
+        </div>
+        <div class="count" id="count"></div>
+        <div id="cards"></div>
+
+        <h2>how a writer gets into rooms</h2>
+        <p>Nearly every event above has a side door that is not the ticket page. In rough order of how well they work:</p>
+        <ol class="playbook">
+            <li><b>Cover it.</b> Press credentials are the cheapest ticket in the city. TechCrunch Disrupt, Cerebral Valley (media passes are free), OpenAI DevDay, NVIDIA GTC, AI Engineer, and most conferences of any size credential freelancers with two recent bylines. Lead with WIRED every time. Keep a current <a href="https://muckrack.com/" target="_blank" rel="noopener">Muck Rack</a> profile with the beat set to "AI, US–China, San Francisco": publicists build their invite lists from it, and that is how invite-only dinners find you. A <a href="https://nwu.org/journalism-division/press-passes/" target="_blank" rel="noopener">National Writers Union press pass</a> is a cheap fallback credential.</li>
+            <li><b>Be on stage.</b> You have already moderated at Asia Society, DevCon, and Stanford. A speaker or moderator slot converts to invitations everywhere else. Standing pitches to keep live: "Chinese open-weight models and what the Valley gets wrong" (Cerebral Valley, AI Engineer, Semafor, GPTDAO), "China's Industrial Party and American techno-optimism" (Progress Conference, LessOnline, Interintellect), "the diaspora AI founder wave" (HYSTA, Asia Society).</li>
+            <li><b>Use the fellowships.</b> GovAI and Roots of Progress are the two credentials that open Lighthaven, Constellation, EA Global, and Progress Conference. Email the alumni channels rather than the public application form; ask for the alumni invitation by name.</li>
+            <li><b>Convene.</b> The fastest way to get invited is to invite. A recurring eight-person <em>Concurrent</em> dinner (one lab person, one China-tech founder, one policy person, one editor, one skeptic) costs an evening a month and makes you a node rather than a guest. Interintellect and The Commons will host and promote a salon if you would rather not run logistics.</li>
+            <li><b>Ask for the list.</b> Every organizer (Cerebral Valley, Founders Inc, Frontier Tower, the Lighthaven crew, Tech Week hosts) keeps a WhatsApp or Slack group that never hits Luma. When you meet one, say you are a journalist who covers the scene and ask to be added. They hold press and plus-one slots for sold-out events.</li>
+            <li><b>Anchor the year on Lighthaven.</b> The Berkeley campus hosts the season's spine: The Curve and Progress Conference in October, EA Global in spring, LessOnline and Manifest in June, EAGx in August. Being a regular there is worth more than any single conference badge.</li>
+        </ol>
+
+        <h2>signal sources</h2>
+        <p>Where events surface before they fill. Most Luma calendars have a <em>Subscribe → Add iCal</em> button; pipe those into a grey "Radar" calendar so the machine layer runs itself, and keep the human layer (the X thread, the newsletters, Partiful) for a Sunday skim. Partiful has no feed at all, so the parties stay manual.</p>
+        <div id="sources"></div>
+
+        <h2>the weekly routine</h2>
+        <ol class="routine">
+            <li><b>Once (30 minutes):</b> add the iCal feeds above to a separate "Radar" calendar in Google Calendar. Subscribe to Cerebral Valley, Stochastic Sandbox, ChinaTalk, Tech Buzz China, DigiChina, and Asia Society emails. Set up a Muck Rack profile.</li>
+            <li><b>Sunday (20 minutes):</b> read Michelle Fang's thread, the Cerebral Valley issue, and Partiful Explore. RSVP the same day to anything with a cap or approval gate; those fill in 24 to 72 hours.</li>
+            <li><b>Daily (5 minutes):</b> skim the Latent Space and Frontier Tower Discord event channels and an X list of organizers. Invite-only dinners are announced there first, usually as "DM for invite."</li>
+            <li><b>Monthly:</b> check the Lighthaven schedule and this page's "act now" list. Send press or speaker requests six to eight weeks before anything tier 1 or tier 2.</li>
+            <li><b>Quarterly:</b> host one dinner. Update this page: rescore what disappointed, add what you heard about too late, and note who got you in.</li>
+        </ol>
+    </div>
+
+    <footer>
+        Built as a living document. Scores are editorial judgments, not measurements. Edit the EVENTS list in this file's source to add or rescore anything.
+    </footer>
+
+    <script>
+    // =====================================================================
+    // DATA. Edit freely. Dates are ISO (YYYY-MM-DD). Leave `end` out for one-day events.
+    // `verified: false` means the date follows the event's usual pattern and should be confirmed.
+    // type: conference | salon | party | community | policy | china | hackathon
+    // access: open | apply | invite | press | member
+    // scores 1-5: signal, writer, china, exclusive
+    // =====================================================================
+    const EVENTS = [
+  {
+    name: "The Curve 2026",
+    type: "conference", access: "apply",
+    start: "2026-10-02", end: "2026-10-04", deadline: "2026-09-09", verified: true,
+    where: "Lighthaven, Berkeley", cost: "ticketed; late tier +50%, travel support on request",
+    url: "https://thecurve.goldengateinstitute.org/",
+    scores: { signal: 5, writer: 5, china: 3, exclusive: 4 },
+    tags: ["ai futures", "safety", "policy", "lighthaven", "golden gate institute"],
+    why: "The one room where lab researchers, safety people, accelerationists, policy staff, and critics argue in the same tent for three days. The Curve is explicitly designed as a debate between worldviews, and the 2025 cohort included several journalists and Substack writers. It is the closest thing SF has to a salon at conference scale.",
+    get: "A season's worth of essay material on the AI-futures divide, off-the-record conversations with people who otherwise only speak through papers, and a peer group of writers who take AI seriously as an intellectual subject. Your China angle is scarce here: almost nobody in the room can speak to how Chinese labs and the Industrial Party mindset see the same questions.",
+    how: "Anyone can apply on the site. The late window is open until <b>September 9</b> at a 50% premium; ask for the discount or travel support in the application, it is offered. Lead with the WIRED and Asterisk bylines and the GovAI fellowship. If you miss the window, email the organizers directly and offer to write about it.",
+    note: "Overlaps with Stanford HAI's Oct 2 conference. Choose The Curve."
+  },
+  {
+    name: "Progress Conference 2026",
+    type: "conference", access: "invite",
+    start: "2026-10-08", end: "2026-10-11", verified: true,
+    where: "Lighthaven, Berkeley (Works in Progress reception at Stripe HQ, Oct 8)", cost: "ticketed, non-refundable; open applications closed May 31",
+    url: "https://rootsofprogress.org/conference/",
+    scores: { signal: 5, writer: 5, china: 3, exclusive: 4 },
+    tags: ["progress studies", "roots of progress", "works in progress", "asterisk", "abundance"],
+    why: "Your home turf. Roots of Progress Institute's flagship, co-hosted with Abundance Institute, Foresight, IFP, and Works in Progress. 2026 keynotes include Tyler Cowen, Waymo's Dmitri Dolgov, DARPA director Stephen Winchell, and John Martinis. The editors who commission progress-adjacent essays (Works in Progress, Asterisk, Big Think) are all in the building.",
+    get: "Commissions. You wrote about the 2025 edition for Big Think; a second-year piece with a China lens (how Chinese techno-optimism compares to the American progress movement) is an obvious pitch. Also: the Thursday interest-group day and the WIP reception at Stripe are where the small-room conversations happen.",
+    how: "You are a Roots of Progress fellow, so ask for the alumni invitation rather than applying cold: email progress-conference@rootsofprogress.org now, mention the Big Think piece, and propose covering it again. Request the Works in Progress reception invite in the same email.",
+    note: "Runs concurrently with SF Tech Week (Oct 5–11). Berkeley wins; dip into one or two Tech Week dinners on the Monday and Tuesday before."
+  },
+  {
+    name: "Stanford SCCEI China Conference",
+    type: "policy", access: "invite",
+    start: "2027-04-15", verified: false, when: "spring 2027 (2026 edition was spring, theme: Understanding DeepSeek Moments)",
+    where: "Stanford", cost: "free, invitation only",
+    url: "https://sccei.fsi.stanford.edu/",
+    scores: { signal: 4, writer: 5, china: 5, exclusive: 4 },
+    tags: ["stanford", "china innovation", "deepseek", "economists", "policy"],
+    why: "The Stanford Center on China's Economy and Institutions runs the most rigorous, data-driven room on China's innovation capacity in the Bay. The 2026 edition was built around the DeepSeek moment. Attendees are the economists and policy people (Scott Rozelle, Yasheng Huang, Rush Doshi tier) whose numbers end up in every serious China-AI essay.",
+    get: "Primary-source data and academic sources for the China half of your beat, and credibility with the policy world that reads Asterisk and Ideas Letter. This is where you find the counter-arguments to Silicon Valley's DeepSeek folklore.",
+    how: "Invitation only, and invitations flow through staff relationships. Join the SCCEI and DigiChina mailing lists now, attend two or three of the open weekly seminars this fall, introduce yourself to the program staff as a writer who has spoken at Stanford (the Open Models in China workshop, Nov 2025), and ask to be considered for the spring conference.",
+    note: "Date is unverified; watch sccei.fsi.stanford.edu/events."
+  },
+  {
+    name: "Cerebral Valley AI Summit",
+    type: "conference", access: "press",
+    start: "2026-11-12", verified: true,
+    where: "San Francisco (venue TBA)", cost: "$699 regular; media passes free if approved",
+    url: "https://cerebralvalleyaisummit.com/",
+    scores: { signal: 5, writer: 4, china: 2, exclusive: 4 },
+    tags: ["newcomer", "volley", "founders", "vcs", "dario amodei"],
+    why: "Roughly 350 funded AI founders and top GPs in one room for a day of onstage conversations, run by Eric Newcomer and Volley. 2026 confirmed speakers include Dario Amodei, Ali Ghodsi, and Nikesh Arora. Probably the best attendee-to-square-foot ratio of any SF conference.",
+    get: "Quotable lab and infra CEOs at close range, a hallway track full of founders who will talk candidly to a writer, and a read on what the venture class actually believes about China this quarter. Good for sourcing a Concurrent piece on the SV view of Chinese models.",
+    how: "Apply through cerebralvalley.com and select the media ticket; media has historically been free when approved. Apply in September, not November. Mention WIRED and that you host a Mandarin-language podcast with reach in the Chinese-speaking founder community.",
+    note: ""
+  },
+  {
+    name: "Semafor: Silicon Valley & The World",
+    type: "conference", access: "invite",
+    start: "2026-11-17", verified: false, when: "November 2026 (exact dates not yet public)",
+    where: "San Francisco", cost: "free for invitees",
+    url: "https://www.semafor.com/events",
+    scores: { signal: 4, writer: 4, china: 3, exclusive: 4 },
+    tags: ["semafor", "live journalism", "ceos", "policy"],
+    why: "Semafor's new annual SF convening, two days of live journalism with an advisory board that includes Satya Nadella, Jensen Huang, Daniela Amodei, and Reid Hoffman. Built for exactly the CEO-meets-geopolitics conversation your writing lives in.",
+    get: "On-record newsmaker interviews you can quote, plus a room of editors and correspondents from national outlets. This is a commissioning room as much as a sourcing room: Semafor's tech desk runs on the US–China angle.",
+    how: "Request an invite at events.semafor.com as soon as the 2026 page goes live (the earlier SF page hit capacity). Identify yourself as press covering US–China AI. If you know anyone on Semafor's tech desk, a one-line intro beats the form.",
+    note: "Dates unverified. Semafor announced the series in April 2026; watch semafor.com/events."
+  },
+  {
+    name: "Constellation (Berkeley)",
+    type: "community", access: "apply",
+    verified: true, when: "rolling; Visiting Fellowship Sep 14 – Dec 18, 2026 (fall closed), next cohort applications in winter",
+    where: "Berkeley", cost: "fellowships funded; no public events",
+    url: "https://constellation.org/",
+    scores: { signal: 5, writer: 4, china: 3, exclusive: 5 },
+    tags: ["ai safety", "research center", "fellowship", "govai"],
+    why: "The densest concentration of AI safety and governance researchers outside the labs, with 300-plus weekly visitors. There is no ticket to buy; the only way in is a fellowship or a member's guest pass. The conversations inside are a year ahead of what shows up in public.",
+    get: "The sources behind the AI governance discourse, and a desk among people who will read drafts seriously. For a writer, a visiting fellowship here is the equivalent of a residency at the most important newsroom on the beat.",
+    how: "Your GovAI fellowship is the credential. Apply to the next Visiting Fellowship cohort (watch constellation.org/programs, applications usually open in winter for spring) with a writing project on Chinese AI governance, which is a gap in their roster. Meanwhile, ask a GovAI contact who works there to host you for a day.",
+    note: ""
+  },
+  {
+    name: "LessOnline 2027",
+    type: "conference", access: "open",
+    start: "2027-06-04", end: "2027-06-06", verified: false, when: "early June 2027 (2026 was Jun 5–7)",
+    where: "Lighthaven, Berkeley", cost: "2026: $550–675; free tickets for people with great blogs",
+    url: "https://less.online/",
+    scores: { signal: 4, writer: 5, china: 2, exclusive: 2 },
+    tags: ["bloggers", "essayists", "rationalists", "lighthaven", "substack"],
+    why: "A festival of internet writers, the people whose blogs the AI world reads: Scott Alexander, Zvi, Gwern-adjacent, Astral Codex Ten commenters, and every serious AI Substacker. The organizers comp tickets for writers with a real body of work.",
+    get: "Your future readers and your future collaborators. Nobody at LessOnline covers China well, and the room knows it. Come with a talk proposal on the Chinese internet's intellectual culture (Industrial Party, Lingao) and you will leave with subscribers and dinner invitations.",
+    how: "Apply for the free blogger ticket when sales open (usually March–April) linking Concurrent, the WIRED and Asterisk pieces. Propose a session; LessOnline runs an open schedule and speakers get priority.",
+    note: "Manifest (prediction markets, same venue) usually follows the next weekend; the two weeks together are the cheapest way to meet the whole Lighthaven scene."
+  },
+  {
+    name: "OpenAI Forum",
+    type: "community", access: "apply",
+    verified: true, when: "rolling admission; quarterly in-person events at OpenAI HQ",
+    where: "OpenAI HQ, San Francisco", cost: "free",
+    url: "https://forum.openai.com/",
+    scores: { signal: 4, writer: 4, china: 2, exclusive: 4 },
+    tags: ["openai", "expert community", "economics", "policy"],
+    why: "OpenAI's invitation-only expert community: a few hundred domain experts (economists, historians, policy people, writers) who get early briefings and small in-person sessions with OpenAI leadership. Recent events include AI economics evenings with Kevin Weil and Ronnie Chatterji.",
+    get: "Direct line into how the lab frames itself to the intellectual class, plus a standing invitation to small dinners at HQ. Low time commitment (about an hour a quarter) for a very high-status affiliation on your bio.",
+    how: "Apply at forum.openai.com with your LinkedIn and a note on your domain expertise: history of technology, China's AI ecosystem, media. They screen for expertise, not follower count. Mention the Stanford and Asia Society panels.",
+    note: ""
+  },
+  {
+    name: "OpenAI DevDay 2026",
+    type: "conference", access: "press",
+    start: "2026-09-29", verified: true,
+    where: "Fort Mason, San Francisco", cost: "$650; applications closed, press by email",
+    url: "https://openai.com/index/devday-2026/",
+    scores: { signal: 4, writer: 4, china: 2, exclusive: 3 },
+    tags: ["openai", "developers", "keynote", "fort mason"],
+    why: "The day the whole AI press corps is in one building, with product news that sets the quarter's agenda. The hallway is more useful than the keynote: OpenAI's researchers and PMs are on the floor and talking.",
+    get: "A news hook for Concurrent the same week (every editor wants a China reaction piece to a DevDay launch), plus face time with the reporters who cover the labs day to day.",
+    how: "Applications for attendee tickets closed in July. Request media credentials at press@devday.openai.com immediately, citing WIRED; they issued press passes in 2025. If declined, the keynote is livestreamed and the after-parties on Luma are open.",
+    note: "Conflicts with The AI Conference (Sep 29–Oct 1 at Pier 48). DevDay wins if you get in."
+  },
+  {
+    name: "The Information: AI Agenda Live",
+    type: "conference", access: "open",
+    start: "2026-09-23", verified: true,
+    where: "SFMOMA, San Francisco", cost: "paid ticket (subscriber discount)",
+    url: "https://www.theinformation.com/events/ai-agenda-live-2026",
+    scores: { signal: 4, writer: 4, china: 2, exclusive: 3 },
+    tags: ["the information", "lab execs", "vcs", "sfmoma"],
+    why: "A one-day, intimate program hosted by The Information's AI reporters (Palazzolo, Efrati) with the lab executives and investors who are their sources. Small enough to talk to speakers afterward.",
+    get: "The Information's sources are the people who decide what gets built. Also a chance to meet the best-sourced AI reporters in the city; they trade tips, and a China specialist is useful to them.",
+    how: "Open registration via the event page. The Information rarely credentials outside press for its own events, so budget for the ticket or ask about a subscriber rate. Go as a peer, not as press.",
+    note: ""
+  },
+  {
+    name: "HYSTA Annual Conference: AI at Scale",
+    type: "china", access: "open",
+    start: "2026-09-26", verified: true,
+    where: "Santa Clara Convention Center", cost: "Eventbrite tickets; VIP gala tier",
+    url: "https://www.hysta.org/annualconf_2026",
+    scores: { signal: 3, writer: 4, china: 5, exclusive: 2 },
+    tags: ["hysta", "chinese american", "founders", "santa clara", "gala"],
+    why: "The highest-density room of senior Chinese-American tech leadership in the Valley: founders, Fortinet- and NVIDIA-tier executives, cross-border VCs. The evening VIP gala is where the actual networking happens.",
+    get: "Profiles and podcast guests. This is the cohort Rest of World called Silicon Valley's new power players, and almost nobody writes about them in English with the cultural fluency you have. Also the natural audience for CyberPink.",
+    how: "Buy a ticket on Eventbrite; ask HYSTA about a media or speaker ticket for the gala. Pitch yourself as a moderator for next year while you are there.",
+    note: ""
+  },
+  {
+    name: "Asia Society NorCal: Future of US & China / Tech Series",
+    type: "china", access: "open",
+    start: "2027-01-21", verified: false, when: "annual conference ~late January 2027; Tech Series roughly bimonthly",
+    where: "San Francisco", cost: "roughly $20–75; media accreditation available",
+    url: "https://asiasociety.org/northern-california/events",
+    scores: { signal: 3, writer: 4, china: 5, exclusive: 2 },
+    tags: ["asia society", "us-china", "policy", "consuls", "tech council"],
+    why: "The public US–China forum in SF: consuls-general, Bay Area executives with China operations, the Tech Council, and the policy crowd. You have already been a panelist and moderator here, which makes it your most reliable stage.",
+    get: "Speaking slots, which are the fastest way to get invited everywhere else. Each appearance here has led to a podcast or panel invitation; keep the cadence.",
+    how: "Register on Eventbrite for anything in the Tech Series. For the January conference, email the program team proposing a panel on Chinese open-weight models or the diaspora AI founder wave. Ask to be added to the media list.",
+    note: "Conference date unverified; 2026 edition was Jan 22."
+  },
+  {
+    name: "Edge Esmeralda 2027",
+    type: "community", access: "apply",
+    start: "2027-05-29", end: "2027-06-26", verified: false, when: "late May – June 2027 (2026 was May 30 – Jun 27)",
+    where: "Healdsburg, Sonoma County", cost: "ticketed by week; pricier for full month",
+    url: "https://www.edgeesmeralda.com/",
+    scores: { signal: 4, writer: 4, china: 2, exclusive: 3 },
+    tags: ["pop-up village", "zuzalu", "longevity", "crypto", "ai", "healdsburg"],
+    why: "A month-long pop-up village descended from Zuzalu, which you were part of. The AI, biotech, and crypto crowds cohabit, and the best conversations happen over a week of shared meals rather than a two-day conference.",
+    get: "Deep relationships rather than business cards, and an essay setting (the network-state and pop-up-city movement as seen from the China-tech lens is an unwritten piece). Your Zuzalu history means you can propose programming.",
+    how: "Apply when 2027 tickets open (usually early in the year); offer to host a session or a salon week on China and the internet. Ask the organizers about contributor or press tickets.",
+    note: "Dates unverified."
+  },
+  {
+    name: "Bloomberg Tech 2027",
+    type: "conference", access: "invite",
+    start: "2027-06-02", end: "2027-06-03", verified: false, when: "early June 2027 (2026 was Jun 3–4)",
+    where: "St. Regis, San Francisco", cost: "paid; Innovators Circle invite only",
+    url: "https://www.bloomberglive.com/calendar/",
+    scores: { signal: 4, writer: 3, china: 3, exclusive: 4 },
+    tags: ["bloomberg", "ceos", "emily chang", "public companies"],
+    why: "Two days of public-company CEOs and top VCs interviewed on stage by Bloomberg's tech anchors. Polished and TV-driven, but the greenroom crowd is senior.",
+    get: "On-record quotes from people who otherwise only speak on earnings calls, and a look at how Wall Street frames China risk. Modest return for the price unless you have a specific story.",
+    how: "Bloomberg rarely credentials outside press; attend as a ticketed guest or via a speaker's plus-one. Lower priority than Cerebral Valley or Semafor.",
+    note: "Dates unverified."
+  },
+  {
+    name: "NVIDIA GTC 2027",
+    type: "conference", access: "press",
+    start: "2027-03-14", end: "2027-03-18", verified: true,
+    where: "San Jose McEnery Convention Center", cost: "~$2,100–2,500 full; press free via media registration",
+    url: "https://www.nvidia.com/gtc/",
+    scores: { signal: 4, writer: 3, china: 4, exclusive: 2 },
+    tags: ["nvidia", "chips", "export controls", "jensen", "san jose"],
+    why: "The year's biggest hardware news moment. For a China writer the interest is specific: export controls, the H20 saga, and how NVIDIA talks about the Chinese market are all on the record here.",
+    get: "The chips half of your beat in one week, plus the Chinese hardware startups and lab BD teams who now show up at mainstream conferences instead of diaspora events.",
+    how: "NVIDIA runs media registration each year via nvidianews.nvidia.com; the 2027 form goes live in the fall. Apply early with the WIRED byline.",
+    note: ""
+  },
+  {
+    name: "AI Engineer World's Fair 2027",
+    type: "conference", access: "press",
+    start: "2027-06-29", end: "2027-07-02", verified: true,
+    where: "Moscone West, San Francisco", cost: "2026: $299 expo to $2,399 leadership; press via info@ai.engineer",
+    url: "https://www.ai.engineer/worldsfair/2027",
+    scores: { signal: 4, writer: 3, china: 3, exclusive: 2 },
+    tags: ["swyx", "latent space", "engineers", "open models", "devrel"],
+    why: "The largest technical AI conference in SF, run by swyx and the Latent Space team, with DevRel from every lab and the working engineers who actually ship. Chinese open-weight models (Qwen, DeepSeek, Kimi) get more serious airtime here than anywhere else in the US.",
+    get: "The technical reality check for your China coverage: who is actually using Chinese models in production and why. Good hallway sourcing for a reported piece.",
+    how: "Email info@ai.engineer for a press pass; they have admitted press before. Otherwise the $299 expo pass gets you the hallway, which is the point.",
+    note: ""
+  },
+  {
+    name: "Anthropic: Code with Claude 2027",
+    type: "conference", access: "apply",
+    start: "2027-05-05", verified: false, when: "likely May 2027 (2026 was May 6–7, SF)",
+    where: "San Francisco", cost: "free, application based",
+    url: "https://claude.com/code-with-claude",
+    scores: { signal: 4, writer: 3, china: 2, exclusive: 3 },
+    tags: ["anthropic", "claude", "developers"],
+    why: "Anthropic's developer conference: small, application-based, with researchers and PMs on the floor. Press attended in 2026 (MIT Technology Review, Every, Simon Willison).",
+    get: "Access to the lab whose safety framing and China policy stance are most quotable for your beat. In the meantime, the Anthropic Builder Salon during SF Tech Week is an easy entry point.",
+    how: "Apply when registration opens (spring); request media credentials through Anthropic comms. Attend a Claude community meetup on Luma first so the application is not cold.",
+    note: "Dates unverified."
+  },
+  {
+    name: "Manifest 2027",
+    type: "conference", access: "open",
+    start: "2027-06-11", end: "2027-06-13", verified: false, when: "mid-June 2027 (2026 was Jun 12–14)",
+    where: "Lighthaven, Berkeley", cost: "2026: ~$538 standard, $100 volunteer; Friday Night Market free",
+    url: "https://www.manifest.is/",
+    scores: { signal: 4, writer: 4, china: 2, exclusive: 2 },
+    tags: ["forecasting", "prediction markets", "manifold", "lighthaven"],
+    why: "The forecasting and prediction-market festival, 600–700 people, with an unusually high density of people who think quantitatively about AI timelines, plus the writers who cover them.",
+    get: "A different register of AI conversation (probabilities, not vibes) and the contrarian crowd that will read a China essay closely. Cheap for the quality of people.",
+    how: "Buy a ticket when sales open; volunteer tickets are $100. Propose a session on forecasting Chinese AI progress, a topic the room is bad at and knows it.",
+    note: "Dates unverified."
+  },
+  {
+    name: "Foresight Vision Weekend USA 2026",
+    type: "conference", access: "apply",
+    start: "2026-11-13", end: "2026-11-15", verified: true,
+    where: "San Francisco", cost: "ticketed; registration via foresight.org / Luma",
+    url: "https://foresight.org/events/vision-weekend-usa-2026/",
+    scores: { signal: 3, writer: 4, china: 1, exclusive: 3 },
+    tags: ["foresight institute", "unconference", "longevity", "nanotech", "ai safety"],
+    why: "About 300 people, three days of talks, unconference sessions, and demos across AI, nanotech, neurotech, and longevity. The most accessible serious weekend on this list, and a Progress Conference co-host.",
+    get: "Long-horizon thinkers and funders who commission and share essays; a chance to test the Industrial Party material on a techno-optimist American audience.",
+    how: "Register on the Foresight page or the linked Luma; it is an application-style RSVP rather than a hard gate. Mention the Roots of Progress fellowship.",
+    note: "The day after Cerebral Valley AI Summit; plan the week."
+  },
+  {
+    name: "SF Tech Week 2026 (a16z)",
+    type: "party", access: "open",
+    start: "2026-10-05", end: "2026-10-11", verified: true,
+    where: "across San Francisco", cost: "mostly free; capped dinners by host approval",
+    url: "https://www.tech-week.com/sf",
+    scores: { signal: 3, writer: 3, china: 2, exclusive: 1 },
+    tags: ["a16z", "parties", "dinners", "luma", "anthropic builder salon"],
+    why: "Hundreds of decentralized events in one week. Very uneven: panels are noise, but the capped dinners hosted by labs and funds (the Anthropic Builder Salon is listed) are real rooms, and this is when out-of-town editors and founders are in the city.",
+    get: "Serendipity at volume, and a good week for a Concurrent dispatch on the SF mood. Treat it as a hunting license for dinners, not as a conference.",
+    how: "Watch luma.com/sftw from mid-September; RSVP to anything approval-gated within a day of posting. For dinners, message the host directly and say you are press covering AI and China. Overlaps Progress Conference, so aim for Monday and Tuesday.",
+    note: ""
+  },
+  {
+    name: "TechCrunch Disrupt 2026",
+    type: "conference", access: "press",
+    start: "2026-10-13", end: "2026-10-15", verified: true,
+    where: "Moscone West, San Francisco", cost: "~$900–2,000; press passes for accredited journalists",
+    url: "https://techcrunch.com/events/techcrunch-disrupt/",
+    scores: { signal: 3, writer: 3, china: 2, exclusive: 2 },
+    tags: ["techcrunch", "startups", "battlefield", "expo"],
+    why: "Ten thousand people, big-name onstage interviews, and a loud expo floor. Not an intimate room, but the press pass is real and the speaker greenroom is where the reporting happens.",
+    get: "A credential to add to the pile, onstage newsmakers, and a look at the early-stage founder cohort, including a growing number of Chinese-background teams.",
+    how: "Apply for a press pass on the event site about a month out; decisions come roughly two weeks before. TechCrunch checks for regular tech coverage, so lead with WIRED.",
+    note: ""
+  },
+  {
+    name: "Fortune Brainstorm AI 2026",
+    type: "conference", access: "invite",
+    start: "2026-12-07", end: "2026-12-08", verified: true,
+    where: "St. Regis, San Francisco", cost: "$3,500, invitation only, subject to approval",
+    url: "https://conferences.fortune.com/event/brainstorm-ai-2026/",
+    scores: { signal: 4, writer: 3, china: 2, exclusive: 4 },
+    tags: ["fortune", "cxo", "roundtables", "enterprise"],
+    why: "Roundtable-heavy executive summit: Fortune 500 chief AI officers, lab executives, policymakers. Senior and corporate; the conversation is about deployment, not ideas.",
+    get: "Enterprise-side sources and a sense of how big companies actually think about Chinese models and supply chains. Useful for one reported piece; not a scene to join.",
+    how: "Fortune admits select outside press by request; email the conference team with the WIRED byline and a specific story you are reporting. Do not pay the ticket.",
+    note: ""
+  },
+  {
+    name: "Axios AI+ Summit: San Francisco",
+    type: "policy", access: "invite",
+    start: "2026-12-03", verified: true,
+    where: "San Francisco (venue TBA)", cost: "free, invite only; livestream open",
+    url: "https://axiosaisummitinvite.splashthat.com/",
+    scores: { signal: 4, writer: 3, china: 3, exclusive: 3 },
+    tags: ["axios", "policy", "newsmakers", "half day"],
+    why: "Half a day of short, dense newsmaker interviews in the Axios style, with a heavier policy and government presence than the founder conferences.",
+    get: "Quotable lines on AI policy and China competition from people you would otherwise never reach, in a format that is efficient for a writer.",
+    how: "Submit the request-an-invite form and identify yourself as press. The livestream is a fine fallback.",
+    note: ""
+  },
+  {
+    name: "Stanford HAI Fall Conference",
+    type: "policy", access: "open",
+    start: "2026-10-02", verified: true,
+    where: "Stanford", cost: "free, registration",
+    url: "https://hai.stanford.edu/events",
+    scores: { signal: 3, writer: 3, china: 3, exclusive: 1 },
+    tags: ["stanford hai", "ai index", "science", "policy"],
+    why: "HAI's annual conference on AI in science, business, and policy, plus the team behind the AI Index (whose 2026 edition found the US lead over China had all but evaporated). Public and free.",
+    get: "The people who produce the US-versus-China numbers everyone cites, and HAI's weekly seminars as an ongoing low-cost source of academic contacts.",
+    how: "Register on the HAI events page. It collides with The Curve; skip this one this year and attend the Wednesday seminars instead.",
+    note: ""
+  },
+  {
+    name: "The AI Conference 2026",
+    type: "conference", access: "open",
+    start: "2026-09-29", end: "2026-10-01", verified: true,
+    where: "Pier 48, San Francisco", cost: "ticketed",
+    url: "https://aiconference.com/",
+    scores: { signal: 3, writer: 3, china: 3, exclusive: 1 },
+    tags: ["pier 48", "5,500 attendees", "open models"],
+    why: "A large practitioner conference (5,500-plus, 120 speakers) that lands the week before Tech Week. Solid speakers, open registration, and Chinese labs' US teams increasingly show up here.",
+    get: "A backup if DevDay press credentials fall through, and a hallway full of engineers with opinions about Qwen and DeepSeek.",
+    how: "Register on the site; ask about a media pass (most conferences of this size grant one for two recent bylines).",
+    note: "Conflicts with OpenAI DevDay on Sep 29."
+  },
+  {
+    name: "The Information: WTF Summit",
+    type: "conference", access: "apply",
+    start: "2026-10-27", end: "2026-10-28", verified: true,
+    where: "Napa Valley", cost: "paid, curated",
+    url: "https://www.theinformation.com/events/wtf-summit-2026",
+    scores: { signal: 3, writer: 3, china: 1, exclusive: 4 },
+    tags: ["women in tech", "media", "finance", "napa"],
+    why: "Women in Tech, Media, and Finance: a small, expensive, off-the-record-ish summit with senior women executives and The Information's own reporters.",
+    get: "A senior peer network and mentors in media; less directly useful for the China beat. Worth it if someone else pays.",
+    how: "Application plus ticket. Ask The Information about a journalist rate, or skip in favor of their SF subscriber events, which come with a subscription.",
+    note: ""
+  },
+  {
+    name: "Interintellect SF salons",
+    type: "salon", access: "open",
+    verified: false, when: "in-person SF evenings announced irregularly; check the salons page",
+    where: "San Francisco", cost: "typically $20–40",
+    url: "https://interintellect.com/salons",
+    scores: { signal: 3, writer: 4, china: 2, exclusive: 1 },
+    tags: ["salon", "essayists", "noah smith", "nadia asparouhova"],
+    why: "Ticketed conversation salons with the internet-essayist set. A recent SF in-person series featured Noah Smith, Eli Dourado, Nadia Asparouhova, Rohit Krishnan, and Conor Friedersdorf.",
+    get: "The exact readership of Concurrent in a room of 20, and a model for the salon format you could host yourself.",
+    how: "Buy a ticket. Then pitch Anna Gát on hosting your own Interintellect salon on Chinese techno-optimism; hosts get the platform's audience.",
+    note: ""
+  },
+  {
+    name: "Chinese Tech Network monthly",
+    type: "china", access: "open",
+    verified: false, when: "monthly, fourth Thursday",
+    where: "Plug and Play, Sunnyvale", cost: "free or low cost via Luma",
+    url: "https://luma.com/munm3wwh",
+    scores: { signal: 2, writer: 3, china: 5, exclusive: 1 },
+    tags: ["chinese founders", "pitch night", "sunnyvale", "出海"],
+    why: "Monthly pitch night and fireside for early-stage Chinese founders and seed investors. Ground-level view of the AI 出海 pipeline a year before it shows up in the news.",
+    get: "Founder sources and podcast guests before anyone else has profiled them. Low signal per event, high signal over a year of attendance.",
+    how: "RSVP on Luma. Go twice, then ask the organizers to put you on the speaker or judge list.",
+    note: ""
+  },
+  {
+    name: "GenAI / AGI Summit SF (GPTDAO)",
+    type: "china", access: "open",
+    start: "2027-07-17", verified: false, when: "summer 2027 (2026 edition was Jul 18–19, Palace of Fine Arts)",
+    where: "Palace of Fine Arts, San Francisco", cost: "ticketed; forums often free",
+    url: "https://agisummit.ai/",
+    scores: { signal: 3, writer: 3, china: 4, exclusive: 1 },
+    tags: ["gptdao", "chinese engineers", "summit", "private circle dinner"],
+    why: "The largest recurring Chinese-run AI convening in SF, from a community of roughly 20,000 Chinese AI engineers and founders. The Private Circle Dinner is the real event.",
+    get: "Engineer-level sourcing inside Big Tech's Chinese cohort, and a stage where a bilingual writer is an obvious speaker.",
+    how: "Register when tickets open; pitch a talk or moderation slot early and ask for the dinner invite as a speaker.",
+    note: "Dates unverified."
+  },
+  {
+    name: "Frontier Tower",
+    type: "community", access: "member",
+    verified: true, when: "several events daily; Frontier Residency batch applications open Oct 2026",
+    where: "995 Market St, San Francisco", cost: "$190/mo or $1,800/yr; many events open on Luma",
+    url: "https://frontiertower.io/",
+    scores: { signal: 3, writer: 3, china: 2, exclusive: 2 },
+    tags: ["vertical village", "deep tech", "residency", "coworking"],
+    why: "A 16-floor deep-tech village downtown with three or more events a day across AI, neurotech, longevity, and hardware. The volume is noisy, but it is the physical center of the young builder scene right now.",
+    get: "A desk in the middle of the scene and a steady flow of demo nights; good for texture and for meeting the 24-year-olds who will run the next wave.",
+    how: "Attend open events via luma.com/frontiertowerSF before paying for membership. The residency is aimed at builders, but writers-in-residence have been floated; ask.",
+    note: ""
+  },
+  {
+    name: "EA Global: San Francisco 2027",
+    type: "conference", access: "apply",
+    start: "2027-03-12", verified: false, when: "spring 2027 (unconfirmed; 2026 was Feb 13–15)",
+    where: "San Francisco", cost: "free to low cost, application",
+    url: "https://www.effectivealtruism.org/ea-global",
+    scores: { signal: 3, writer: 3, china: 2, exclusive: 2 },
+    tags: ["effective altruism", "ai safety", "governance"],
+    why: "The EA conference in the city where the AI safety field lives. Heavy on governance and policy people, including many who work on China.",
+    get: "Governance sources and the funders who back AI-policy writing. Lower signal per hour than The Curve, but the China-governance sub-crowd is worth a day.",
+    how: "Apply on the site when applications open; the GovAI fellowship makes acceptance likely.",
+    note: "Date unverified."
+  }
+];
+
+    const SOURCES = [
+  { name: "Cerebral Valley newsletter + events list", url: "https://cerebralvalley.beehiiv.com/", signal: 5, feed: "RSS", what: "Weekly guide to the week's SF (and NYC) AI events, plus a daily-updated list at cerebralvalley.ai/events. The canonical calendar of the scene." },
+  { name: "Cerebral Valley on Luma", url: "https://luma.com/cerebralvalley_", signal: 5, feed: "iCal", what: "Hackathons, demo nights, dinners. Subscribe via the calendar's iCal button so it lands in Google Calendar automatically." },
+  { name: "Michelle Fang's weekly edit (X)", url: "https://x.com/michelleefang", signal: 5, feed: "none, read weekly", what: "Hand-picked thread of the ten best SF tech and AI in-person events each week, out of thirty-plus. The best human filter in the city." },
+  { name: "Luma Discover: San Francisco → AI", url: "https://luma.com/discover/sf/ai", signal: 4, feed: "city-wide iCal", what: "Every approved public AI event in SF. Noisy but complete; the catch-all subscription." },
+  { name: "SF Tech Week calendar", url: "https://luma.com/sftw", signal: 5, feed: "iCal (seasonal)", what: "Oct 5–11. Events post two to five weeks ahead and capped dinners fill within days. Check daily from mid-September." },
+  { name: "Latent Space calendar + Discord", url: "https://luma.com/ls", signal: 4, feed: "iCal; Discord for early word", what: "swyx's community: paper club, AI in Action, AI Engineer side events. The Discord's city channels surface invite-only dinners first." },
+  { name: "Stochastic Sandbox: This Week in SF AI", url: "https://stochasticsandbox.com/", signal: 4, feed: "RSS", what: "Written weekly roundup of SF AI events with commentary on which are worth it." },
+  { name: "Anthropic events + Claude community", url: "https://luma.com/claudecommunity", signal: 4, feed: "iCal", what: "Official Anthropic events (Code with Claude, Builder Salons) and community meetups." },
+  { name: "OpenAI community calendar", url: "https://luma.com/calendar/cal-FhWvOxHV0AGL38z", signal: 4, feed: "iCal", what: "Build Week hack nights and Codex meetups; the DevDay after-parties show up here." },
+  { name: "a16z AI events", url: "https://luma.com/calendar/cal-Gvv30k9ZIsCDjIH", signal: 4, feed: "iCal", what: "Invite-heavy VC events and live podcast tapings. RSVP early; many require approval." },
+  { name: "Founders Inc (Fort Mason)", url: "https://luma.com/fdotinc", signal: 4, feed: "iCal", what: "Night Hacks, Off Season demo days, festivals. The young-builder scene's anchor venue." },
+  { name: "Frontier Tower SF", url: "https://luma.com/frontiertowerSF", signal: 4, feed: "iCal; Discord", what: "Three-plus events a day at 995 Market. Filter hard, but this is where the volume is." },
+  { name: "South Park Commons public events", url: "https://luma.com/southparkcommons-events", signal: 4, feed: "iCal", what: "Demo Faires and founder talks from the pre-idea technologist community." },
+  { name: "The AI Collective (ex-GenAI Collective), SF chapter", url: "https://lu.ma/aic-sf", signal: 3, feed: "iCal", what: "Largest SF AI community; demo nights, research roundtables, Tech Week takeovers." },
+  { name: "Sequoia events", url: "https://lu.ma/sequoiaevents", signal: 3, feed: "iCal", what: "Sequoia-affiliated public events. The private dinners never post; this is the visible layer." },
+  { name: "Partiful Explore: SF", url: "https://partiful.com/explore/sf", signal: 3, feed: "none", what: "Where the actual parties and house dinners live. No feed, so a manual weekly skim." },
+  { name: "Lighthaven schedule (Waypoint)", url: "https://waypoint.lighthaven.space/", signal: 5, feed: "check monthly", what: "The Berkeley campus that hosts LessOnline, Manifest, The Curve, Progress Conference, and EAGx. Its calendar is the year's spine." },
+  { name: "Stanford HAI events", url: "https://hai.stanford.edu/events", signal: 3, feed: "RSS + iCal via events.stanford.edu", what: "Weekly seminars and the fall conference; the AI Index team." },
+  { name: "Stanford SCCEI + DigiChina", url: "https://digichina.stanford.edu/", signal: 4, feed: "newsletter", what: "China innovation economics and translated tech-policy analysis. The mailing lists are how you get the invite-only conference." },
+  { name: "Asia Society Northern California", url: "https://asiasociety.org/northern-california/events", signal: 4, feed: "Eventbrite RSS", what: "The public SF calendar for US–China tech and policy; Tech Series roughly every two months." },
+  { name: "ChinaTalk", url: "https://www.chinatalk.media/", signal: 4, feed: "RSS", what: "Jordan Schneider's newsletter; announces Bay Area live shows and is your closest editorial peer on the beat." },
+  { name: "Tech Buzz China (Rui Ma)", url: "https://techbuzzchina.substack.com/", signal: 4, feed: "RSS", what: "Bay Area based China-tech analyst; tours, WAIC coverage, and the best English-language China-tech desk in the region." },
+  { name: "Concordia AI: AI Safety in China", url: "https://aisafetychina.substack.com/", signal: 3, feed: "RSS", what: "Beijing-based governance newsletter; essential background for China AI-policy pieces." },
+  { name: "Chinese Tech Network + SJTU-SV digest", url: "https://luma.com/munm3wwh", signal: 3, feed: "iCal", what: "Monthly Chinese-founder pitch nights in Sunnyvale and the alumni event digest that lists most 华人 tech gatherings." },
+  { name: "HYSTA + GPTDAO mailing lists", url: "https://www.hysta.org/", signal: 3, feed: "email", what: "Chinese-American tech association calendars; the annual conference and the GenAI Summit." },
+  { name: "SF LessWrong meetup + LessWrong community page", url: "https://www.lesswrong.com/community", signal: 3, feed: "none", what: "First-Saturday SF meetup and the rationalist event board; where Lighthaven side events are announced." },
+  { name: "Long Now talks", url: "https://longnow.org/talks/", signal: 2, feed: "RSS", what: "Monthly talks at The Interval, Fort Mason. Occasional AI speakers of the long-view kind you write about." }
+];
+
+    // =====================================================================
+    // RENDERING
+    // =====================================================================
+    const W = { signal: .35, writer: .35, china: .15, exclusive: .15 };
+    const TODAY = new Date(); TODAY.setHours(0,0,0,0);
+    const day = 86400000;
+    const fmt = d => d ? new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+    const fmtShort = d => d ? new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+    const daysUntil = d => d ? Math.round((new Date(d + 'T00:00:00') - TODAY) / day) : null;
+    const composite = e => +(e.scores.signal * W.signal + e.scores.writer * W.writer + e.scores.china * W.china + e.scores.exclusive * W.exclusive).toFixed(1);
+    const bar = n => '█'.repeat(n) + '<span style="color:#ccc">' + '█'.repeat(5 - n) + '</span>';
+    const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+    function gcal(e) {
+        if (!e.start) return '';
+        const s = e.start.replace(/-/g, '');
+        const endDate = new Date((e.end || e.start) + 'T00:00:00'); endDate.setDate(endDate.getDate() + 1);
+        const en = endDate.toISOString().slice(0, 10).replace(/-/g, '');
+        const u = new URL('https://calendar.google.com/calendar/render');
+        u.searchParams.set('action', 'TEMPLATE');
+        u.searchParams.set('text', e.name);
+        u.searchParams.set('dates', s + '/' + en);
+        u.searchParams.set('location', e.where || '');
+        u.searchParams.set('details', (e.url || '') + '\n\nWhy: ' + e.why);
+        return u.toString();
+    }
+
+    function dateLine(e) {
+        if (e.start && e.end && e.start !== e.end) return fmt(e.start).replace(/, \d{4}$/, '') + ' – ' + fmt(e.end);
+        if (e.start) return fmt(e.start);
+        return e.when || 'recurring';
+    }
+
+    function tier(score) { return score >= 4.2 ? 1 : score >= 3.5 ? 2 : 3; }
+
+    function render() {
+        const type = state.type, access = state.access, when = document.getElementById('f-when').value;
+        const q = document.getElementById('f-q').value.trim().toLowerCase();
+        const sort = document.getElementById('f-sort').value;
+        let list = EVENTS.map(e => ({ ...e, score: composite(e), d: daysUntil(e.start), dl: daysUntil(e.deadline) }));
+        list = list.filter(e => {
+            if (type !== 'all' && e.type !== type) return false;
+            if (access !== 'all' && e.access !== access) return false;
+            if (when === 'recurring' && e.start) return false;
+            if (/^\d+$/.test(when)) { const n = +when; if (e.d === null || e.d < -1 || e.d > n) return false; }
+            if (when === 'deadline' && !e.deadline) return false;
+            if (q) { const hay = [e.name, e.where, e.why, e.get, e.how, e.tags?.join(' ')].join(' ').toLowerCase(); if (!hay.includes(q)) return false; }
+            return true;
+        });
+        const past = e => e.d !== null && (daysUntil(e.end || e.start) < 0);
+        list.sort((a, b) => {
+            if (past(a) !== past(b)) return past(a) ? 1 : -1;
+            if (sort === 'date') { if (a.d === null && b.d === null) return b.score - a.score; if (a.d === null) return 1; if (b.d === null) return -1; return a.d - b.d; }
+            if (sort === 'deadline') { if (a.dl === null && b.dl === null) return b.score - a.score; if (a.dl === null) return 1; if (b.dl === null) return -1; return a.dl - b.dl; }
+            return b.score - a.score || (a.d ?? 9e9) - (b.d ?? 9e9);
+        });
+        document.getElementById('count').textContent = list.length + ' of ' + EVENTS.length + ' events';
+        document.getElementById('cards').innerHTML = list.map(e => {
+            const t = tier(e.score);
+            const isPast = past(e);
+            const badges = [];
+            if (t === 1) badges.push('<span class="badge hot">tier 1</span>');
+            if (e.d !== null && !isPast && e.d <= 14) badges.push('<span class="badge soon">' + (e.d <= 0 ? 'happening now' : 'in ' + e.d + ' days') + '</span>');
+            if (e.dl !== null && e.dl >= 0 && e.dl <= 30) badges.push('<span class="badge soon">deadline in ' + e.dl + ' days</span>');
+            if (e.dl !== null && e.dl < 0 && !isPast) badges.push('<span class="badge">deadline passed</span>');
+            badges.push('<span class="badge">' + esc(e.type) + '</span>');
+            badges.push('<span class="badge ' + (e.access === 'invite' ? 'hot' : e.access === 'open' ? 'ok' : '') + '">' + esc({ open: 'open registration', apply: 'application', invite: 'invite only', press: 'press pass', member: 'membership' }[e.access] || e.access) + '</span>');
+            if (e.verified === false) badges.push('<span class="badge unv">unverified date</span>');
+            if (isPast) badges.push('<span class="badge">past</span>');
+            return `
+            <article class="card tier-${t}${isPast ? ' past' : ''}">
+                <div class="head">
+                    <h3>${e.url ? `<a href="${esc(e.url)}" target="_blank" rel="noopener">${esc(e.name)}</a>` : esc(e.name)}</h3>
+                    <div class="composite">${e.score.toFixed(1)}<small>/5</small></div>
+                </div>
+                <div class="meta"><span>${esc(dateLine(e))}</span>${e.where ? `<span>${esc(e.where)}</span>` : ''}${e.cost ? `<span>${esc(e.cost)}</span>` : ''}${e.deadline ? `<span>deadline ${esc(fmt(e.deadline))}</span>` : ''}</div>
+                <div class="badges">${badges.join('')}</div>
+                <div class="scores">
+                    <div>signal <span class="bar">${bar(e.scores.signal)}</span></div>
+                    <div>writer roi <span class="bar">${bar(e.scores.writer)}</span></div>
+                    <div>china × sv <span class="bar">${bar(e.scores.china)}</span></div>
+                    <div>exclusivity <span class="bar">${bar(e.scores.exclusive)}</span></div>
+                </div>
+                <div class="eval">
+                    <p><b>Why go:</b> ${e.why}</p>
+                    <p><b>What you get:</b> ${e.get}</p>
+                    <details><summary>how to get in</summary><p>${e.how}</p>${e.note ? `<p class="small">${e.note}</p>` : ''}</details>
+                </div>
+                <div class="links">
+                    ${e.url ? `<a href="${esc(e.url)}" target="_blank" rel="noopener">official page</a>` : ''}
+                    ${e.start && !isPast ? `<a href="${gcal(e)}" target="_blank" rel="noopener">add to google calendar</a>` : ''}
+                    ${(e.links || []).map(l => `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`).join('')}
+                </div>
+            </article>`;
+        }).join('') || '<p class="small">Nothing matches. Loosen the filters.</p>';
+    }
+
+    const state = { type: 'all', access: 'all' };
+    function chips(id, key, values) {
+        const el = document.getElementById(id);
+        el.innerHTML = values.map(v => `<button class="chip${state[key] === v ? ' on' : ''}" data-v="${v}">${v}</button>`).join('');
+        el.querySelectorAll('.chip').forEach(b => b.addEventListener('click', () => { state[key] = b.dataset.v; chips(id, key, values); render(); }));
+    }
+    const TYPES = ['all', ...[...new Set(EVENTS.map(e => e.type))].sort()];
+    const ACCESS = ['all', 'open', 'apply', 'invite', 'press', 'member'].filter(a => a === 'all' || EVENTS.some(e => e.access === a));
+    chips('f-type', 'type', TYPES);
+    chips('f-access', 'access', ACCESS);
+    ['f-when', 'f-sort'].forEach(id => document.getElementById(id).addEventListener('change', render));
+    document.getElementById('f-q').addEventListener('input', render);
+    document.getElementById('f-reset').addEventListener('click', () => {
+        state.type = 'all'; state.access = 'all';
+        document.getElementById('f-when').value = 'all'; document.getElementById('f-sort').value = 'score'; document.getElementById('f-q').value = '';
+        chips('f-type', 'type', TYPES); chips('f-access', 'access', ACCESS); render();
+    });
+    document.getElementById('updated').textContent = 'September 4, 2026';
+
+    // sources
+    const srcEl = document.getElementById('sources');
+    if (srcEl) srcEl.innerHTML = SOURCES.map(s => `
+        <div class="source"><b><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.name)}</a></b> <span class="sig">signal ${bar(s.signal)}${s.feed ? ' · ' + esc(s.feed) : ''}</span><br><span class="small">${s.what}</span></div>`).join('');
+
+    // act-now list: deadlines or starts within 45 days, tier 1-2 first
+    (function () {
+        const el = document.getElementById('act-now');
+        if (!el) return;
+        const items = EVENTS.map(e => ({ ...e, score: composite(e), d: daysUntil(e.start), dl: daysUntil(e.deadline) }))
+            .filter(e => (e.dl !== null && e.dl >= 0 && e.dl <= 45) || (e.d !== null && e.d >= 0 && e.d <= 45 && daysUntil(e.end || e.start) >= 0))
+            .sort((a, b) => Math.min(a.dl ?? 9e9, a.d ?? 9e9) - Math.min(b.dl ?? 9e9, b.d ?? 9e9));
+        el.innerHTML = items.length ? items.map(e => {
+            const what = e.dl !== null && e.dl >= 0 && e.dl <= 45
+                ? `application deadline <b>${fmtShort(e.deadline)}</b> (${e.dl === 0 ? 'today' : 'in ' + e.dl + ' days'})`
+                : `${fmtShort(e.start)}${e.end && e.end !== e.start ? '–' + fmtShort(e.end) : ''} (${e.d <= 0 ? 'now' : 'in ' + e.d + ' days'})`;
+            const action = { press: 'request a press pass now', apply: 'apply now', invite: 'ask for the invitation now', open: 'register', member: 'join or attend an open event' }[e.access];
+            return `<li><b>${esc(e.name)}</b> · ${what} · score ${e.score.toFixed(1)} · ${action}${e.url ? ` · <a href="${esc(e.url)}" target="_blank" rel="noopener">page</a>` : ''}</li>`;
+        }).join('') : '<li class="small">Nothing urgent in the next 45 days. Check the Lighthaven schedule and the Tech Week calendar.</li>';
+    })();
+
+    render();
+    </script>
+</body>
+</html>

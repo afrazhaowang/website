@@ -147,6 +147,8 @@
         <a href="#" onclick="showSection('experiences')">working experiences</a>
         <span class="separator">•</span>
         <a href="#" onclick="showSection('commonplace')">commonplace book</a>
+        <span class="separator">•</span>
+        <a href="events.html">ai event radar</a>
     </nav>
 
     <div id="home" class="section active">
@@ -382,6 +384,9 @@
 
 
     <script>
+        if (location.hash && document.getElementById(location.hash.slice(1))) {
+            showSection(location.hash.slice(1));
+        }
         function showSection(sectionName) {
             const sections = document.querySelectorAll('.section');
             sections.forEach(section => {
